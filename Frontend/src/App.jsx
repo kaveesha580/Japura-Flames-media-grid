@@ -1,16 +1,25 @@
-import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Home from "./Home/Home.jsx";
+import Admin from "./Admin/Admin.jsx";
+import Login from "./Login/Login.jsx";
+import Booking from './Booking/Booking.jsx';
+import Registration from './Registration/Registration.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className="App">
-      <h1>Count: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-      <button onClick={() => setCount(count - 1)}>Decrement</button>
-    </div>
-  )
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/Admin" element={<Admin />} />
+        <Route path="/Login" element={<Login />} />
+        <Route path="/Booking" element={<Booking />} />
+        <Route path="/register" element={<Registration />} />
+        {/* 404 Not Found Route - විකල්ප */}
+        <Route path="*" element={<h1>404 - Page Not Found</h1>} />
+      </Routes>
+    </BrowserRouter>
+  );
 }
 
-export default App
+export default App;

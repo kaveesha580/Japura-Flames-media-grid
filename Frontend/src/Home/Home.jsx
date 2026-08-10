@@ -1,16 +1,873 @@
-import { useState } from 'react'
+import React, { useState, useEffect, useRef } from "react";
+import './Home.css';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Navigation } from "swiper/modules";
+import { useReveal } from "./Home.js";
+import { useNavigate } from "react-router-dom";
+import "swiper/css";
+import "swiper/css/navigation";
+
+// ✅ User icons
+import { 
+  FaYoutube, FaFacebookF, FaInstagram, FaTiktok, 
+  FaWhatsapp, FaEnvelope, FaPhone, FaLocationDot,
+  FaUser, FaRightFromBracket, FaChartBar, 
+  FaCamera, FaHeart, FaComment, FaEye, FaClock,  FaHourglassHalf
+} from 'react-icons/fa6';
+import { 
+   FaCalendarAlt,
+  FaCheckCircle,
+  FaTimesCircle
+} from 'react-icons/fa';
+
+const API_URL = 'http://localhost:5000/api/projects';
+const BOOKING_API_URL = 'http://localhost:5000/api/bookings';
+
+
+
+const facebookPosts = [
+  {
+    url: "https://www.facebook.com/Jpuraflames/posts/pfbid0dP62V9BcBEEdTrPGbo6RqbYhZYxFi5ULnMXUEHESZw1kEiPdTrRjqUjxupapqP12l",
+    height: 808,
+  },
+  {
+    url: "https://www.facebook.com/Jpuraflames/posts/pfbid02VSL2xs4HxEb4M1Myxzw3dvbNjuYdiDi7ZFnzqseJMTpSBegQmngjZw9StAhfyWFhl",
+    height: 808,
+  },
+  {
+    url: "https://www.facebook.com/Jpuraflames/posts/pfbid032MZNcfofnBQAozjstAsUiVy5xa5vbuEQuUDaL1oGSJhZNJexC1HXMXUio4eh9Exjl",
+    height: 808,
+  },
+  {
+    url: "https://www.facebook.com/Jpuraflames/posts/pfbid0265FRgvfcuQ1Mm8zfifTqkWsY6sbvQ9oobr8qQbKLoVmMYy538ZWyzm6zfy94iGcBl",
+    height: 808,
+  },
+  {
+    url: "https://web.facebook.com/Jpuraflames/posts/pfbid0C6BG69DvA1dCozbXEKihP29SeGgT94LUb9BKdRWa9hoGBonpW7VUf9jAhSpaHFK3l",
+    height: 808,
+  },
+  {
+    url: "https://web.facebook.com/Jpuraflames/posts/pfbid031ADAXyYnGLM9CBxJX7UKMrp4a3T3mWiQ7pYmNoG5FSKsUXJD1ULCeXyZ3EWbA1e8l",
+    height: 808,
+  },
+  {
+    url: "https://web.facebook.com/Jpuraflames/posts/pfbid0ES2xs2UTD51jPMt2XMd8UM8UoCe1NiW9y27PVY5DHgGLdC4uQiJoagXzCz9HXuUel",
+    height: 808,
+  
+  }
+];
+
+const prideMembers = [
+  {
+    name: "Hasaru Nawarathna",
+    role: "PRESIDENT",
+    image: "/praide/1.jpg",
+    text: "Leading the J'pura Flames crew and shaping every story we tell.",
+  },
+  {
+    name: "Hiruni Randeniya",
+    role: "SECRETARY",
+    image: "/praide/2.jpg",
+    text: "Leading the J'pura Flames crew and shaping every story we tell.",
+  },
+  { 
+    name: "Nethmi Nimasha", 
+    role: "ASSISTANT SECRETARY", 
+    image: "/praide/3.jpg",
+    text: "efehjfbjsbbfbfksbfsbfshbjs " 
+  },
+  { 
+    name: "Natara Shihanza", 
+    role: "ASSISTANT SECRETARY", 
+    image: "/praide/4.jpg",
+    text: "efehjfbjsbbfbfksbfsbfshbjs " 
+  },
+  { 
+    name: "Methsara Dilshan", 
+    role: "TREASURER", 
+    image: "/praide/5.jpg",
+    text: "efehjfbjsbbfbfksbfsbfshbjs " 
+  },
+  { 
+    name: "Manuka Methsara", 
+    role: "VP PHOTOGRAPHY", 
+    image: "/praide/6.jpg" 
+  },
+  { 
+    name: "Kavindu Dhananjaya", 
+    role: "VP PHOTOGRAPHY", 
+    image: "/praide/7.jpg" 
+  },
+  { 
+    name: "Isira Gajanayake", 
+    role: "VP PHOTOGRAPHY", 
+    image: "/praide/8.jpg" 
+  },
+  { 
+    name: "Angana Pawansara", 
+    role: "VP VIDEOGRAPHY", 
+    image: "/praide/9.jpg" 
+  },
+  { 
+    name: "Wasitha Sadesa", 
+    role: "VP VIDEOGRAPHY", 
+    image: "/praide/10.jpg" 
+  },
+  { 
+    name: "Senitha vidusahan", 
+    role: "VP BROADCASTING", 
+    image: "/praide/11.jpg" 
+  },
+  { 
+    name: "Apsara Medurangi", 
+    role: "GRAPHIC DESIGNING", 
+    image: "/praide/12.jpg" 
+  },
+  { 
+    name: "REV.Wathuruwila Saddananda", 
+    role: "GRAPHIC DESIGNING", 
+    image: "/praide/13.jpg" 
+  },
+  { 
+    name: "Oshan Lakshika", 
+    role: "HUMAN RESOURCES", 
+    image: "/praide/14.jpg" 
+  },
+  { 
+    name: "Kemaya perera", 
+    role: "HUMAN RESOURCES", 
+    image: "/praide/15.jpg" 
+  },
+  { 
+    name: "Kasun Kalhara", 
+    role: "IT & MARKETING", 
+    image: "/praide/16.jpg" 
+  },
+];
 
 function Home() {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate();
+  
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
+  const [userName, setUserName] = useState('');
+  const [showMySection, setShowMySection] = useState(false);
+  const [bookingRequests, setBookingRequests] = useState([]);
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [slipUploadingId, setSlipUploadingId] = useState('');
+  const [showProfileEdit, setShowProfileEdit] = useState(false);
+  const [profileForm, setProfileForm] = useState({ fullName: '', phone: '' });
+  const [profileMessage, setProfileMessage] = useState('');
+  const [profileLoading, setProfileLoading] = useState(false);
+  const mySectionRef = useRef(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      setIsLoggedIn(true);
+      const email = localStorage.getItem('userEmail') || 'User';
+      const name = localStorage.getItem('userName') || email.split('@')[0];
+      const phone = localStorage.getItem('userPhone') || '';
+      setUserName(name);
+      setUserEmail(email);
+      setProfileForm({ fullName: name, phone });
+    }
+  }, []);
+
+  // 🟢 MY section open වෙද්දි booking requests fetch කරන්න
+  useEffect(() => {
+    if (showMySection && isLoggedIn) {
+      fetchBookingRequests();
+    }
+  }, [showMySection, isLoggedIn]);
+
+  // 🟢 Booking requests fetch කරන function එක
+  const fetchBookingRequests = async () => {
+    setBookingLoading(true);
+    try {
+      const token = localStorage.getItem('token');
+      const userEmail = localStorage.getItem('userEmail');
+        
+      const response = await fetch(`${BOOKING_API_URL}?email=${encodeURIComponent(userEmail)}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setBookingRequests(data);
+      } else {
+        console.error('Failed to fetch bookings');
+        setBookingRequests([]);
+      }
+    } catch (error) {
+      console.error('Error fetching bookings:', error);
+      setBookingRequests([]);
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  // 🟢 Booking status එක අනුව icon එක
+  const getStatusIcon = (status) => {
+    switch(status?.toLowerCase()) {
+      case 'confirmed':
+        return <FaCheckCircle style={{ color: '#4CAF50' }} />;
+      case 'pending':
+        return <FaHourglassHalf style={{ color: '#FFA500' }} />;
+      case 'cancelled':
+        return <FaTimesCircle style={{ color: '#f44336' }} />;
+      case 'completed':
+        return <FaCheckCircle style={{ color: '#2196F3' }} />;
+      default:
+        return <FaClock style={{ color: '#FFA500' }} />;
+    }
+  };
+
+  const uploadPaymentSlip = (bookingId, file) => {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) return alert('Please select an image file.');
+    if (file.size > 5 * 1024 * 1024) return alert('Slip image must be smaller than 5MB.');
+    const reader = new FileReader();
+    setSlipUploadingId(bookingId);
+    reader.onload = async () => {
+      try {
+        const response = await fetch(`${BOOKING_API_URL}/${bookingId}/payment-slip`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${localStorage.getItem('token')}` },
+          body: JSON.stringify({ data: reader.result, fileName: file.name })
+        });
+        const data = await response.json();
+        if (!response.ok) throw new Error(data.message);
+        await fetchBookingRequests();
+      } catch (error) { alert(error.message || 'Unable to upload the payment slip.'); }
+      finally { setSlipUploadingId(''); }
+    };
+    reader.onerror = () => { setSlipUploadingId(''); alert('Unable to read the selected file.'); };
+    reader.readAsDataURL(file);
+  };
+
+  const goToLogin = () => {
+    navigate('/Login');
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('userEmail');
+    localStorage.removeItem('userName');
+    setIsLoggedIn(false);
+    setUserEmail('');
+    setUserName('');
+    setShowMySection(false);
+    alert('You have been logged out successfully!');
+  };
+
+  const handleBookingClick = (e) => {
+    e.preventDefault();
+    const token = localStorage.getItem('token');
+    if (token) {
+      navigate('/Booking');
+    } else {
+      navigate('/Login');
+    }
+  };
+
+  const toggleProfileEdit = () => {
+    setShowProfileEdit((prev) => !prev);
+    setProfileMessage('');
+  };
+
+  const handleProfileChange = (e) => {
+    const { name, value } = e.target;
+    setProfileForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    if (!profileForm.fullName.trim()) {
+      setProfileMessage('Please enter your name.');
+      return;
+    }
+    if (!profileForm.phone.trim()) {
+      setProfileMessage('Please enter your phone number.');
+      return;
+    }
+
+    setProfileLoading(true);
+    setProfileMessage('');
+
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch('http://localhost:5000/api/auth/me', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          fullName: profileForm.fullName,
+          phone: profileForm.phone,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok && data.success) {
+        setUserName(data.user.fullName);
+        setUserEmail(data.user.email);
+        localStorage.setItem('userName', data.user.fullName);
+        localStorage.setItem('userPhone', data.user.phone || '');
+        setProfileMessage('Profile updated successfully.');
+        setShowProfileEdit(false);
+      } else {
+        setProfileMessage(data.message || 'Failed to update profile.');
+      }
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      setProfileMessage('Server error while updating profile.');
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const toggleMySection = () => {
+    if (isLoggedIn) {
+      setShowMySection(!showMySection);
+    } else {
+      navigate('/Login');
+    }
+  };
+
+  const heroRef = useReveal();
+  const homeRef = useReveal();
+  const servicesRef = useReveal();
+  const aboutRef = useReveal();
+  const prideRef = useReveal();
+  const projectsRef = useReveal();
+  const galleryRef = useReveal();
+  const footerRef = useReveal();
+
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        setProjects(data);
+      } else if (data.data && Array.isArray(data.data)) {
+        setProjects(data.data);
+      } else {
+        setProjects([]);
+      }
+    } catch (error) {
+      console.error('Failed to load projects:', error);
+      setError('Failed to load projects');
+      setProjects([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    <div className="Home">
-      <h1>Count: {count}</h1>
-      <button onClick={() => setCount(count + 1)}>Increment</button>
-      <button onClick={() => setCount(count - 1)}>Decrement</button>
+    <div>
+      <div className="backtop reveal-section" ref={heroRef}></div>
+      
+      {/* Header */}
+      <header>
+        <div className="header-container">
+          
+            <img src="/image/white-logo.png" alt="J'pura Flames Logo" className="logo-img"/>
+         
+          <nav>
+            <ul className="nav-links">
+              <li><a href="#home">Home</a></li>
+              <li><a href="#about">About</a></li>
+              <li><a href="#pride">Pride</a></li>
+              <li><a href="#projects">Projects</a></li>
+              <li><a href="#gallary">Gallery</a></li>
+              <li><a href="#contact">Contact</a></li>
+              {isLoggedIn && (
+                <li>
+                  <a 
+                    href="#my" 
+                    className={`my-tab-link ${showMySection ? 'active' : ''}`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (isLoggedIn) {
+                        setShowMySection(!showMySection);
+                      if (!showMySection) {
+                        setTimeout(() => {
+                          document.getElementById('my')?.scrollIntoView({
+                            behavior: 'auto',
+                            block: 'start',
+                          });
+                        }, 150);
+                      }
+                      } else {
+                        navigate('/Login');
+                      }
+                    }}
+                  >
+                    MY
+                  </a>
+                </li>
+              )}
+            </ul>
+          </nav>
+          
+          {isLoggedIn ? (
+            <div className="user-profile">
+              <button className="user-profile-btn">
+                <FaUser />
+                <span className="user-email">
+                  {userName.length > 15 ? userName.substring(0, 15) + '...' : userName}
+                </span>
+              </button>
+              <button className="logout-nav-btn" onClick={handleLogout}>
+                <FaRightFromBracket />
+                Logout
+              </button>
+            </div>
+          ) : (
+            <button className="login-nav-btn" onClick={goToLogin}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                <polyline points="10 17 15 12 10 7"/>
+                <line x1="15" y1="12" x2="3" y2="12"/>
+              </svg>
+              Login
+            </button>
+          )}
+        </div>
+      </header>
+
+      {/*MY SECTION */}
+      {showMySection && isLoggedIn && (
+        <section className="my-section" id="my" ref={mySectionRef}>
+          <div className="my-section-header">
+            <h2>
+              <FaUser /> Welcome, {userName}
+            </h2>
+            <button className="close-my-section" onClick={() => setShowMySection(false)}>
+              ✕
+            </button>
+          </div>
+
+          <div className="my-dashboard">
+            
+
+            {/* Quick Actions */}
+            <div className="my-quick-actions">
+              <h3>Quick Actions</h3>
+              <div className="my-actions-grid">
+                <button className="my-action-btn" onClick={handleBookingClick}>
+                  <FaCalendarAlt /> Book a Session
+                </button>
+                <button className="my-action-btn">
+                  <FaCamera /> My Gallery
+                </button>
+                <button className="my-action-btn">
+                  <FaChartBar /> My Analytics
+                </button>
+                <button className="my-action-btn" onClick={toggleProfileEdit}>
+                  <FaUser /> Edit Profile
+                </button>
+              </div>
+            </div>
+            {showProfileEdit && (
+              <div className="profile-edit-card">
+                <h3>Edit Profile</h3>
+                <form onSubmit={handleProfileSubmit} className="profile-edit-form">
+                  <div className="form-group">
+                    <label>Name</label>
+                    <input
+                      type="text"
+                      name="fullName"
+                      value={profileForm.fullName}
+                      onChange={handleProfileChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Phone</label>
+                    <input
+                      type="text"
+                      name="phone"
+                      value={profileForm.phone}
+                      onChange={handleProfileChange}
+                      required
+                    />
+                  </div>
+                  <div className="form-group">
+                    <label>Email</label>
+                    <input type="email" value={userEmail} disabled />
+                  </div>
+                  <div className="profile-action-row">
+                    <button type="submit" className="my-action-btn" disabled={profileLoading}>
+                      {profileLoading ? 'Saving...' : 'Save Profile'}
+                    </button>
+                    <button type="button" className="my-action-btn" onClick={() => setShowProfileEdit(false)}>
+                      Cancel
+                    </button>
+                  </div>
+                  {profileMessage && <p className="profile-message">{profileMessage}</p>}
+                </form>
+              </div>
+            )}
+
+            {/* 🟢 Booking Requests with Cancel Message */}
+           {/* 🟢 Booking Requests with Cancel Message & Complete Link */}
+<div className="my-recent-activity">
+  <h3>
+    <FaCalendarAlt /> Booking Requests
+    {bookingRequests.length > 0 && (
+      <span className="booking-count">{bookingRequests.length}</span>
+    )}
+  </h3>
+  
+  {bookingLoading ? (
+    <div className="booking-loading">
+      <p>Loading bookings...</p>
     </div>
-    
-  )
+  ) : bookingRequests.length > 0 ? (
+    <div className="my-activity-list">
+      {bookingRequests.slice(0, 5).map((booking, index) => (
+        <div className="my-activity-item" key={booking._id || index}>
+          <span className="my-activity-dot"></span>
+          <div className="booking-info">
+            <div className="booking-header">
+              <p className="booking-title">
+                <strong>{booking.eventName || 'Event'}</strong>
+              </p>
+              <span className={`booking-status ${booking.status?.toLowerCase() || 'pending'}`}>
+                {getStatusIcon(booking.status)}
+                {booking.status || 'Pending'}
+              </span>
+            </div>
+            <div className="booking-details">
+              <small>
+                <FaCalendarAlt /> {booking.eventDate || 'N/A'}
+                {' • '}
+                <FaClock /> {booking.eventTime || 'N/A'}
+              </small>
+              <br />
+              <small className="booking-user">
+                {booking.email || userEmail}
+              </small>
+            </div>
+            
+            {/* 🟢 CANCEL MESSAGE - Show when booking is cancelled */}
+            {booking.status?.toLowerCase() === 'cancelled' && booking.cancelMessage && (
+              <div className="cancel-message-box">
+                <div className="cancel-message-header">
+                  <span className="cancel-icon">🚫</span>
+                  <span className="cancel-title">Booking Cancelled</span>
+                </div>
+                <p className="cancel-message-text">
+                  <strong>Reason:</strong> {booking.cancelMessage}
+                </p>
+              </div>
+            )}
+            
+            {/* 🟢🟢🟢 COMPLETE LINK - Show when booking is completed 🟢🟢🟢 */}
+            {booking.status?.toLowerCase() === 'confirmed' && (
+              <div className="payment-card">
+                <strong>Payment Details</strong>
+                {booking.paymentAccount?.bankName || booking.paymentAccount?.accountNumber ? (
+                  <div className="payment-account-details">
+                    <span>Bank: {booking.paymentAccount.bankName || '—'}</span>
+                    <span>Account name: {booking.paymentAccount.accountName || '—'}</span>
+                    <span>Account number: {booking.paymentAccount.accountNumber || '—'}</span>
+                    {booking.paymentAccount.instructions && <span>{booking.paymentAccount.instructions}</span>}
+                  </div>
+                ) : <p>Please contact us for payment details.</p>}
+                {booking.paymentSlip?.data ? (
+                  <div className="slip-uploaded">Payment slip uploaded: {booking.paymentSlip.fileName}</div>
+                ) : (
+                  <label className="slip-upload-btn">
+                    {slipUploadingId === booking._id ? 'Uploading slip...' : 'Upload payment slip'}
+                    <input type="file" accept="image/*" disabled={slipUploadingId === booking._id} onChange={(e) => uploadPaymentSlip(booking._id, e.target.files[0])} />
+                  </label>
+                )}
+              </div>
+            )}
+
+            {booking.status?.toLowerCase() === 'completed' && booking.completeLink && (
+              <div className="complete-link-box">
+                <div className="complete-link-header">
+                  <span className="complete-icon">✅</span>
+                  <span className="complete-title">Project Completed!</span>
+                </div>
+                <a 
+                  href={booking.completeLink} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="complete-link"
+                >
+                  🔗 View Completed Work
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+      
+      {bookingRequests.length > 5 && (
+        <div className="my-activity-item view-all">
+          <button 
+            className="view-all-btn"
+            onClick={() => navigate('/Bookings')}
+          >
+            View all {bookingRequests.length} bookings →
+          </button>
+        </div>
+      )}
+    </div>
+  ) : (
+    <div className="no-bookings">
+      <p>No booking requests yet.</p>
+      <button className="my-action-btn" onClick={handleBookingClick}>
+        <FaCalendarAlt /> Make a Booking
+      </button>
+    </div>
+  )}
+</div>
+          </div>
+        </section>
+      )}
+
+      {/* ===== HOME SECTION ===== */}
+      <div className="home reveal-section" id="home" ref={homeRef}>
+        <div className="video-background">
+          <video autoPlay muted loop playsInline>
+            <source src="/videos/home1.mp4" type="video/mp4" />
+          </video>
+          <div className="video-overlay">
+            <div className="logo">FLAMES</div></div>
+        </div>
+
+        <div className="home-content">
+          <div className="home-text">
+            <span className="line1">
+              — Official Media Unit — University of Sri Jayewardenepura —
+            </span>
+            <span className="line2">THE LENS BEHIND EVERY SPARK OF J'PURA</span>
+            <p className="line3">
+              Photography, videography, live broadcast, design and words — J'pura
+              Flames turns campus matches, ceremonies and late
+              <br /> nights into stories worth watching{" "}
+            </p>
+            <br />
+            <div className="hero-actions">
+              <a href="#gallary" className="viewGalleryBtn">
+                View Gallery👉
+              </a>
+              <a 
+                href="" 
+                className="bookingBtn"
+                onClick={handleBookingClick}
+              >
+                Booking👉
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Services Section */}
+      <section className="home-services reveal-section" aria-label="Our services" ref={servicesRef}>
+        <div className="services-label">
+        <span>Photography</span>
+        <span>Videography</span>
+        <span>Live Broadcasting</span>
+        <span>Graphic Design</span>
+        <span>Article Writing</span>
+        <span>Poetry</span>
+        </div>
+      </section>
+
+      {/* About Section */}
+      <section id="about" className="about reveal-section" ref={aboutRef}>
+        <div className="about-new">
+          <div className="about-overview">
+            <div className="about-intro">
+              <span>— Who We Are</span>
+              <h2>The voice and lens<br />of J'Pura.</h2>
+              <p>J'pura Flames is the official student-run media unit of the University of Sri Jayewardenepura, capturing campus stories through photography, videography, design, broadcasting, and journalism.</p>
+            </div>
+            <div className="about-stats">
+              <div><b>13+</b><small>Years on campus</small></div>
+              <div><b>12K+</b><small>Events covered</small></div>
+              <div><b>200+</b><small>Active crew</small></div>
+              <div><b>90K+</b><small>Followers</small></div>
+            </div>
+          </div>
+          <h3>One crew, every medium.</h3>
+          <div className="services-grid">
+            <article><i>📸</i><h4>Photography</h4><p>Match-day action, portraits and campus life, frame by frame.</p></article>
+            <article><i>🎥</i><h4>Videography</h4><p>Highlight reels, event recaps and the moments between.</p></article>
+            <article><i>🎨</i><h4>Graphic Design</h4><p>Posters, social creatives and visual identity for every event.</p></article>
+            <article><i>🎙️</i><h4>Broadcasting</h4><p>Real-time commentary and coverage from the biggest fixtures.</p></article>
+            <article><i>✍️</i><h4>Article & Poetry</h4><p>Creative writing that captures the feeling behind the moment.</p></article>
+            <article><i>🖥️</i><h4>IT & Marketing</h4><p>Digital experiences that power creativity and collaboration.</p></article>
+            <article><i>👨‍💼</i><h4>HR</h4><p>Building a connected, motivated team that grows together.</p></article>
+          </div>
+        </div>
+       
+      </section>
+
+      {/* Pride Section */}
+      <section className="pride reveal-section" id="pride" ref={prideRef}>
+        <p className="pride-label">— The people behind the flame</p>
+        <h2>Meet our pride.</h2>
+        <Swiper className="members-slider" modules={[Autoplay, Navigation]} navigation autoplay={{ delay: 3500, disableOnInteraction: false }} loop spaceBetween={200} breakpoints={{0: { slidesPerView: 1 }, 650: { slidesPerView: 2 }, 950: { slidesPerView: 3 }}}>
+          {prideMembers.map((member, index) => (
+            <SwiperSlide key={index}>
+              <article className="member-card">
+                <img src={member.image} alt={member.role} />
+                <div>
+                  <h3>{member.name}</h3>
+                  <p>{member.role}</p>
+                  <small>{member.text || "Bringing creative campus stories to life."}</small>
+                </div>
+              </article>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </section>
+
+      {/* Projects Section */}
+      <section className="projects reveal-section" id="projects" ref={projectsRef}>
+        <div className="projects-header">
+          <span className="section-label">— Our Work</span>
+          <h2>Featured Projects</h2>
+          <p>Capturing moments, telling stories, and creating memories.</p>
+        </div>
+        {loading ? (
+          <div className="projects-loading"><p>Loading projects...</p></div>
+        ) : error ? (
+          <div className="projects-error"><p>{error}</p></div>
+        ) : projects.length === 0 ? (
+          <div className="projects-empty"><p>No projects added yet. Check back soon!</p></div>
+        ) : (
+          <div className="projects-grid">
+            {projects.map((project) => (
+              <div className="project-card" key={project._id}>
+                <div className="project-image">
+                  <img src={project.image || '/img/wait.jpeg'} alt={project.title} onError={(e) => { e.target.src = '/img/wait.jpeg'; }} />
+                  <div className={`project-status ${project.status === 'Completed' ? 'status-completed' : project.status === 'In Progress' ? 'status-progress' : 'status-planning'}`}>
+                    {project.status === 'Completed' && '✅ Completed'}
+                    {project.status === 'In Progress' && '🔄 In Progress'}
+                    {project.status === 'Planned' && '📝 Planned'}
+                  </div>
+                </div>
+                <div className="project-info">
+                  <h3>{project.title}</h3>
+                  <div className="project-tech">
+                    <span className="tech-stack">📅 {project.eventDate || 'Date TBD'}</span>
+                    <span className="tech-stack">📍 {project.eventLocation || 'Location TBD'}</span>
+                  </div>
+                  <p>{project.description}</p>
+                  {project.githubLink && (
+                    <a href={project.githubLink} className="project-link" target="_blank" rel="noopener noreferrer">
+                      <FaFacebookF /> View on Facebook
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Gallery Section */}
+      <section className="gallary reveal-section" id="gallary" ref={galleryRef}>
+        <div className="gallery-header">
+          <span className="section-label">— Gallery</span>
+          <p>Discover our best moments from campus events, ceremonies, and creative stories.</p>
+        </div>
+        <div className="gallary-intro">
+          <img src="/image/all.jpg" alt="J'pura Flames media team" />
+          <div>
+            <span>Latest work</span>
+            <h2>OUR WORKS</h2>
+            <p>Stories, events, and moments captured by J'pura Flames.</p>
+          </div>
+        </div>
+        <Swiper className="facebook-slider" modules={[Autoplay, Navigation]} navigation autoplay={{ delay: 2000, disableOnInteraction: false }} loop spaceBetween={30} breakpoints={{0: { slidesPerView: 1 }, 650: { slidesPerView: 2 }, 950: { slidesPerView: 3 }}}>
+          {facebookPosts.filter((post) => post.url).map((post) => (
+            <SwiperSlide key={post.url}>
+              <div className="facebook-post-wrapper">
+                <iframe className="facebook-post" style={{ border: "none", overflow: "hidden", width: "100%", height: post.height || 500 }} src={`https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(post.url)}&show_text=true&width=300`} width="300" height={post.height || 500} title="J'pura Flames Facebook post" scrolling="no" frameBorder="0" allowFullScreen allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share" />
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact">
+        <div className="contact-info-item">
+          <div className="icon"><FaEnvelope /></div>
+          <div className="details">
+            <div className="label">Email</div>
+            <a href="mailto:info@jpuraflames.lk" className="value">info@jpuraflames.lk</a>
+          </div>
+        </div>
+        <div className="contact-info-item">
+          <div className="icon"><FaPhone /></div>
+          <div className="details">
+            <div className="label">Phone</div>
+            <a href="tel:+94771234567" className="value">+94 77 123 4567</a>
+          </div>
+        </div>
+        <div className="contact-info-item">
+          <div className="icon"><FaWhatsapp /></div>
+          <div className="details">
+            <div className="label">WhatsApp</div>
+            <a href="https://wa.me/94771234567" className="value" target="_blank" rel="noopener noreferrer">+94 77 123 4567</a>
+          </div>
+        </div>
+        <div className="contact-info-item">
+          <div className="icon"><FaLocationDot /></div>
+          <div className="details">
+            <div className="label">Location</div>
+            <span className="value">University of Sri Jayewardenepura</span>
+          </div>
+        </div>
+        <div className="social-icons">
+          <a href="https://www.youtube.com/@JpuraFlames" className="social-icon youtube" target="_blank" rel="noopener noreferrer"><FaYoutube /> YouTube</a>
+          <a href="https://www.facebook.com/Jpuraflames" className="social-icon facebook" target="_blank" rel="noopener noreferrer"><FaFacebookF /> Facebook</a>
+          <a href="https://www.instagram.com/jpuraflames" className="social-icon instagram" target="_blank" rel="noopener noreferrer"><FaInstagram /> Instagram</a>
+          <a href="https://www.tiktok.com/@jpuraflames" className="social-icon tiktok" target="_blank" rel="noopener noreferrer"><FaTiktok /> TikTok</a>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="site-footer">
+        <div className="footer-brand">
+          <h2>J'PURA FLAMES</h2>
+          <p>Official Media Unit of the University of Sri Jayewardenepura.</p>
+        </div>
+        <div className="footer-links">
+          <a href="#home">Home</a>
+          <a href="#about">About</a>
+          <a href="#projects">Projects</a>
+          <a href="#gallary">Gallery</a>
+        </div>
+        <p className="footer-copy">© 2026 J'Pura Flames. All rights reserved.</p>
+      </footer>
+    </div>
+  );
 }
 
-export default Home
+export default Home;
