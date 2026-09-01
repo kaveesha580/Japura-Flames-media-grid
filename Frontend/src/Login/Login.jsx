@@ -12,14 +12,14 @@ const Login = () => {
   const [isForgotView, setIsForgotView] = useState(false);
   const [resetData, setResetData] = useState({ 
     email: '', 
-    oldPassword: '', 
+    phone: '', 
     newPassword: '', 
     confirmPassword: '' 
   });
-  const [forgotPhoneData, setForgotPhoneData] = useState({ email: '', phone: '', newPassword: '', confirmPassword: '' });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resetLoading, setResetLoading] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -29,30 +29,19 @@ const Login = () => {
     setResetData({ ...resetData, [e.target.name]: e.target.value });
   };
 
-  const handleForgotPhoneChange = (e) => {
-    setForgotPhoneData({ ...forgotPhoneData, [e.target.name]: e.target.value });
-  };
-
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  // ===== Handle Login =====
+ 
   const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
     setLoading(true);
     
-    // Frontend Validation
-    if (!formData.email) {
-      setError('Please enter your email address');
-      setLoading(false);
-      return;
-    }
-    
-    if (!formData.password) {
-      setError('Please enter your password');
+    if (!formData.email || !formData.password) {
+      setError('Please enter both email and password');
       setLoading(false);
       return;
     }
@@ -63,88 +52,83 @@ const Login = () => {
         password: formData.password
       });
       
-      console.log('Login Response:', res.data);
-      
       if (res.data.success) {
-        setSuccess(res.data.message || 'Login Successful!');
+        setSuccess('Login Successful!');
         
-        // 🟢 Fix: res.data.user වලින් data ගන්න
         const user = res.data.user || {};
-        
         localStorage.setItem('token', res.data.token);
         localStorage.setItem('userEmail', user.email || formData.email);
         localStorage.setItem('userId', user.id || '');
-        localStorage.setItem('userName', user.fullName || formData.email.split('@')[0]); // 🟢 Fix: res.data.user.fullName
+        localStorage.setItem('userName', user.fullName || formData.email.split('@')[0]);
         localStorage.setItem('userPhone', user.phone || '');
         
-        console.log('Token saved:', res.data.token);
-        console.log('User Email:', user.email || formData.email);
-        console.log('User Name:', user.fullName || formData.email.split('@')[0]);
-        
-        setTimeout(() => {
-          navigate('/');
-        }, 1500);
+        setTimeout(() => navigate('/'), 1500);
       } else {
         setError(res.data.message || 'Login failed');
       }
-      
     } catch (err) {
       console.error('Login Error:', err);
-      
-      if (err.response) {
-        setError(err.response.data?.message || 'Login failed. Please check your credentials.');
-      } else if (err.request) {
-        setError('Cannot connect to server. Please check your connection.');
-      } else {
-        setError('An error occurred. Please try again.');
-      }
+      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
   };
 
-  // ===== Handle Password Reset =====
-  const handleResetSubmit = async (e) => {
+  // ===== Forgot Password via Phone =====
+  const handleForgotSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setResetLoading(true);
 
-    if (!resetData.email) {
-      return setError('Please enter your email address');
+    const { email, phone, newPassword, confirmPassword } = resetData;
+
+    if (!email) {
+      setError('Please enter your email address');
+      setResetLoading(false);
+      return;
     }
-    if (!resetData.oldPassword) {
-      return setError('Please enter your old password');
+    if (!phone) {
+      setError('Please enter your phone number');
+      setResetLoading(false);
+      return;
     }
-    if (!resetData.newPassword) {
-      return setError('Please enter a new password');
+    if (!newPassword) {
+      setError('Please enter a new password');
+      setResetLoading(false);
+      return;
     }
-    if (resetData.newPassword.length < 6) {
-      return setError('New password must be at least 6 characters');
+    if (newPassword.length < 6) {
+      setError('Password must be at least 6 characters');
+      setResetLoading(false);
+      return;
     }
-    if (resetData.newPassword !== resetData.confirmPassword) {
-      return setError('New passwords do not match!');
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match!');
+      setResetLoading(false);
+      return;
     }
     
     try {
-      const payload = {
-        email: resetData.email,
-        oldPassword: resetData.oldPassword,
-        newPassword: resetData.newPassword
-      };
-      const res = await axios.post('http://localhost:5000/api/auth/reset-password', payload);
+      const res = await axios.post('http://localhost:5000/api/auth/forgot-password', {
+        email,
+        phone,
+        newPassword
+      });
       
       if (res.data.success) {
-        setSuccess(res.data.message);
-        setResetData({ email: '', oldPassword: '', newPassword: '', confirmPassword: '' });
-        
+        setSuccess(res.data.message || 'Password reset successfully');
+        setResetData({ email: '', phone: '', newPassword: '', confirmPassword: '' });
         setTimeout(() => {
           setIsForgotView(false);
         }, 2000);
       } else {
-        setError(res.data.message);
+        setError(res.data.message || 'Failed to reset password');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to change password.');
+      setError(err.response?.data?.message || 'Failed to reset password');
+    } finally {
+      setResetLoading(false);
     }
   };
 
@@ -161,19 +145,11 @@ const Login = () => {
     setSuccess('');
   };
 
-  // Go to Home
-  const goToHome = () => {
-    navigate('/');
-  };
-
-  // Go to Registration
-  const goToRegistration = () => {
-    navigate('/register');
-  };
+  const goToHome = () => navigate('/');
+  const goToRegistration = () => navigate('/register');
 
   return (
     <div className={styles.loginContainer}>
-      {/* Back to Home Button */}
       <button className={styles.backHomeBtn} onClick={goToHome}>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
@@ -198,7 +174,7 @@ const Login = () => {
         {success && <div className={styles.successMessage}>{success}</div>}
 
         {!isForgotView ? (
-          /* ===== LOGIN FORM ===== */
+          // ===== Login Form =====
           <form onSubmit={handleLoginSubmit} className={styles.loginForm}>
             <div className={styles.inputGroup}>
               <label htmlFor="email">Email</label>
@@ -268,57 +244,71 @@ const Login = () => {
           </form>
 
         ) : (
-          /* ===== FORGOT PASSWORD (Phone Verified) ===== */
-          <form onSubmit={async (e) => {
-            e.preventDefault();
-            setError(''); setSuccess('');
-            const { email, phone, newPassword, confirmPassword } = forgotPhoneData;
-            if (!email) return setError('Please enter your email');
-            if (!phone) return setError('Please enter your phone number');
-            if (!newPassword) return setError('Please enter a new password');
-            if (newPassword.length < 6) return setError('Password must be at least 6 characters');
-            if (newPassword !== confirmPassword) return setError('Passwords do not match');
-
-            try {
-              const res = await axios.post('http://localhost:5000/api/auth/forgot-by-phone', { email, phone, newPassword });
-              if (res.data.success) {
-                setSuccess(res.data.message || 'Password reset successfully');
-                setForgotPhoneData({ email: '', phone: '', newPassword: '', confirmPassword: '' });
-                setTimeout(() => setIsForgotView(false), 1500);
-              } else {
-                setError(res.data.message || 'Failed to reset password');
-              }
-            } catch (err) {
-              setError(err.response?.data?.message || 'Server error');
-            }
-          }} className={styles.loginForm}>
+          // ===== Forgot Password Form =====
+          <form onSubmit={handleForgotSubmit} className={styles.loginForm}>
             <div className={styles.inputGroup}>
               <label>Email Address</label>
-              <input type="email" name="email" value={forgotPhoneData.email} onChange={handleForgotPhoneChange} placeholder="name@example.com" required />
+              <input 
+                type="email" 
+                name="email" 
+                value={resetData.email} 
+                onChange={handleResetChange} 
+                placeholder="name@example.com" 
+                required 
+              />
             </div>
 
             <div className={styles.inputGroup}>
               <label>Phone Number</label>
-              <input type="text" name="phone" value={forgotPhoneData.phone} onChange={handleForgotPhoneChange} placeholder="07XXXXXXXX" required />
+              <input 
+                type="text" 
+                name="phone" 
+                value={resetData.phone} 
+                onChange={handleResetChange} 
+                placeholder="07XXXXXXXX" 
+                required 
+              />
             </div>
 
             <div className={styles.inputGroup}>
               <label>New Password</label>
-              <input type="password" name="newPassword" value={forgotPhoneData.newPassword} onChange={handleForgotPhoneChange} required />
+              <input 
+                type="password" 
+                name="newPassword" 
+                value={resetData.newPassword} 
+                onChange={handleResetChange} 
+                placeholder="Min 6 characters"
+                required 
+              />
             </div>
 
             <div className={styles.inputGroup}>
               <label>Confirm New Password</label>
-              <input type="password" name="confirmPassword" value={forgotPhoneData.confirmPassword} onChange={handleForgotPhoneChange} required />
+              <input 
+                type="password" 
+                name="confirmPassword" 
+                value={resetData.confirmPassword} 
+                onChange={handleResetChange} 
+                required 
+              />
             </div>
 
-            <div style={{display: 'flex', gap: 8}}>
-              <button type="submit" className={styles.loginBtn}>Reset Password</button>
-              <button type="button" className={styles.createAccountBtn} onClick={switchToLoginView}>Back to Login</button>
-            </div>
+            <button type="submit" className={styles.loginBtn} disabled={resetLoading}>
+              {resetLoading ? 'Resetting...' : 'Reset Password'}
+            </button>
+
+            <button 
+              type="button" 
+              className={styles.createAccountBtn} 
+              onClick={switchToLoginView}
+              style={{ marginTop: '10px' }}
+            >
+              Back to Login
+            </button>
           </form>
         )}
       </div>
+      <div className={styles.loginimg}></div>
     </div>
   );
 };

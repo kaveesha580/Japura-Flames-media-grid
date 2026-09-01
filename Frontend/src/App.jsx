@@ -15,7 +15,7 @@ function App() {
         <Route path="/Login" element={<Login />} />
         <Route path="/Booking" element={<Booking />} />
         <Route path="/register" element={<Registration />} />
-        {/* 404 Not Found Route - විකල්ප */}
+       
         <Route path="*" element={<h1>404 - Page Not Found</h1>} />
       </Routes>
     </BrowserRouter>

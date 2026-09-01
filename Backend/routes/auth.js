@@ -4,9 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// ============================================
-// 🔑 POST /api/auth/login
-// ============================================
+
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
@@ -68,7 +66,7 @@ router.post('/login', async (req, res) => {
       user: {
         id: userData._id,
         email: userData.email,
-        fullName: userData.fullName,  // 🟢 Name එක add කරන්න
+        fullName: userData.fullName,
         phone: userData.phone,
         accountType: userData.accountType,
         organization: userData.organization
@@ -84,9 +82,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
-// ============================================
-// 📧 POST /api/auth/register
-// ============================================
+
 router.post('/register', async (req, res) => {
   const {
     fullName,
@@ -98,7 +94,6 @@ router.post('/register', async (req, res) => {
   } = req.body;
 
   try {
-    // 1. Validate input
     if (!fullName || !email || !phone || !password) {
       return res.status(400).json({
         success: false,
@@ -113,7 +108,6 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 2. Check if email already exists
     const emailExists = await User.emailExists(email);
     if (emailExists) {
       return res.status(409).json({
@@ -122,7 +116,6 @@ router.post('/register', async (req, res) => {
       });
     }
 
-    // 3. Create new user
     const user = new User({
       fullName,
       email,
@@ -134,7 +127,6 @@ router.post('/register', async (req, res) => {
 
     await user.save();
 
-    // 4. Generate JWT Token
     const token = jwt.sign(
       {
         user: {
@@ -158,7 +150,7 @@ router.post('/register', async (req, res) => {
       user: {
         id: userData._id,
         email: userData.email,
-        fullName: userData.fullName,  // 🟢 Name එක add කරන්න
+        fullName: userData.fullName,
         phone: userData.phone,
         accountType: userData.accountType,
         organization: userData.organization
@@ -182,86 +174,39 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// ============================================
-// 🔄 POST /api/auth/reset-password
-// ============================================
-router.post('/reset-password', async (req, res) => {
-  const { email, oldPassword, newPassword } = req.body;
 
-  try {
-    if (!email || !oldPassword || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'All fields are required'
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: 'New password must be at least 6 characters'
-      });
-    }
-
-    const user = await User.findOne({ email }).select('+password');
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User with this email does not exist.'
-      });
-    }
-
-    const isMatch = await user.comparePassword(oldPassword);
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: 'Incorrect old password.'
-      });
-    }
-
-    user.password = newPassword;
-    await user.save();
-
-    console.log(`✅ Password reset for: ${email}`);
-
-    res.json({
-      success: true,
-      message: 'Password has been successfully changed! You can now login.'
-    });
-
-  } catch (err) {
-    console.error('❌ Password Reset Error:', err.message);
-    res.status(500).json({
-      success: false,
-      message: 'Server Error'
-    });
-  }
-});
-
-// ============================================
-// 📱 POST /api/auth/forgot-by-phone
-// Body: { email, phone, newPassword }
-// Verifies provided phone matches the email, then updates password
-// ============================================
-router.post('/forgot-by-phone', async (req, res) => {
+router.post('/forgot-password', async (req, res) => {
   try {
     const { email, phone, newPassword } = req.body;
 
     if (!email || !phone || !newPassword) {
-      return res.status(400).json({ success: false, message: 'Email, phone and newPassword are required' });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Email, phone and new password are required' 
+      });
     }
 
     if (newPassword.length < 6) {
-      return res.status(400).json({ success: false, message: 'New password must be at least 6 characters' });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'New password must be at least 6 characters' 
+      });
     }
 
     const user = await User.findOne({ email: email.toLowerCase().trim() }).select('+password');
     if (!user) {
-      return res.status(404).json({ success: false, message: 'User with this email does not exist' });
+      return res.status(404).json({ 
+        success: false, 
+        message: 'User with this email does not exist' 
+      });
     }
 
+    // Phone number verification
     if (!user.phone || user.phone.trim() !== phone.trim()) {
-      return res.status(400).json({ success: false, message: 'Phone number does not match the provided email' });
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Phone number does not match the provided email' 
+      });
     }
 
     user.password = newPassword;
@@ -269,17 +214,21 @@ router.post('/forgot-by-phone', async (req, res) => {
 
     console.log(`✅ Password reset by phone for: ${email}`);
 
-    res.json({ success: true, message: 'Password has been reset successfully. You can now login.' });
+    res.json({ 
+      success: true, 
+      message: 'Password has been reset successfully. You can now login.' 
+    });
 
   } catch (error) {
-    console.error('❌ Forgot By Phone Error:', error.message);
-    res.status(500).json({ success: false, message: 'Server Error' });
+    console.error('❌ Forgot Password Error:', error.message);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Server Error' 
+    });
   }
 });
 
-// ============================================
-// 👤 GET /api/auth/me - Get Current User
-// ============================================
+
 router.get('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -331,9 +280,7 @@ router.get('/me', async (req, res) => {
   }
 });
 
-// ============================================
-// ✏️ PUT /api/auth/me - Update Current User Profile
-// ============================================
+
 router.put('/me', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];
@@ -357,7 +304,10 @@ router.put('/me', async (req, res) => {
 
     const updatedUser = await User.findByIdAndUpdate(
       decoded.user.id,
-      { fullName: fullName.trim(), phone: phone.trim() },
+      { 
+        fullName: fullName.trim(), 
+        phone: phone.trim() 
+      },
       { new: true, select: '-password' }
     );
 
@@ -398,9 +348,7 @@ router.put('/me', async (req, res) => {
   }
 });
 
-// ============================================
-// 📋 GET /api/auth/users - Get All Users
-// ============================================
+
 router.get('/users', async (req, res) => {
   try {
     const users = await User.getAllUsers();
@@ -420,9 +368,7 @@ router.get('/users', async (req, res) => {
   }
 });
 
-// ============================================
-// 🔍 GET /api/auth/check-email - Check if email exists (එක පාරක් විතරයි)
-// ============================================
+
 router.get('/check-email', async (req, res) => {
   try {
     const { email } = req.query;
@@ -434,7 +380,6 @@ router.get('/check-email', async (req, res) => {
       });
     }
 
-    // Email එක database එකේ තියෙනවද කියලා check කරන්න
     const user = await User.findOne({ email: email.toLowerCase().trim() });
     
     const exists = !!user;
@@ -447,6 +392,78 @@ router.get('/check-email', async (req, res) => {
 
   } catch (error) {
     console.error('❌ Check Email Error:', error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Server Error'
+    });
+  }
+});
+
+router.put('/change-password', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if (!token) {
+      return res.status(401).json({
+        success: false,
+        message: 'No token provided'
+      });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_secret_key');
+    const { currentPassword, newPassword } = req.body;
+
+    if (!currentPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password and new password are required'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'New password must be at least 6 characters'
+      });
+    }
+
+    const user = await User.findById(decoded.user.id).select('+password');
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found'
+      });
+    }
+
+    const isMatch = await user.comparePassword(currentPassword);
+    if (!isMatch) {
+      return res.status(400).json({
+        success: false,
+        message: 'Current password is incorrect'
+      });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    console.log(`✅ Password changed for: ${user.email}`);
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    });
+
+  } catch (error) {
+    console.error('❌ Change Password Error:', error.message);
+
+    if (error.name === 'JsonWebTokenError') {
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid token'
+      });
+    }
+
     res.status(500).json({
       success: false,
       message: 'Server Error'

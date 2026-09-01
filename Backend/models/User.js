@@ -17,7 +17,7 @@ const UserSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  // 🟢 username field එක සම්පූර්ණයෙන්ම අයින් කරලා
+ 
   password: {
     type: String,
     required: true,
@@ -46,7 +46,7 @@ const UserSchema = new mongoose.Schema({
   }
 });
 
-// 🟢 username auto generate middleware එකත් අයින් කරලා
+
 
 // Hash password before saving
 UserSchema.pre('save', async function(next) {

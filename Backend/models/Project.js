@@ -32,10 +32,8 @@ const projectSchema = new mongoose.Schema({
     type: String,
     default: ''
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+ 
+  
+},{timestamps: true});
 
 module.exports = mongoose.model('Project', projectSchema);

@@ -98,7 +98,7 @@ app.get('/api/test', (req, res) => {
         update: 'PUT /api/bookings/:id',
         delete: 'DELETE /api/bookings/:id'
       },
-      crew: {  // 🟢 මෙය add කරන්න
+      crew: {  
         getAll: 'GET /api/crew',
         create: 'POST /api/crew',
         getOne: 'GET /api/crew/:id',
@@ -112,7 +112,7 @@ app.get('/api/test', (req, res) => {
 });
 
 // ===== MONGO DB =====
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/Flames';
+const MONGODB_URI = process.env.MONGODB_URI;
 
 mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
@@ -139,7 +139,7 @@ app.use((req, res) => {
       auth: '/api/auth',
       projects: '/api/projects',
       bookings: '/api/bookings',
-      crew: '/api/crew',  // 🟢 මෙය add කරන්න
+      crew: '/api/crew',  
       test: '/api/test'
     }
   });
@@ -194,8 +194,7 @@ app.listen(PORT, () => {
   console.log(`🔑 Auth:        http://localhost:${PORT}/api/auth`);
   console.log(`📁 Projects:    http://localhost:${PORT}/api/projects`);
   console.log(`📅 Bookings:    http://localhost:${PORT}/api/bookings`);
-  console.log(`👥 Crew:        http://localhost:${PORT}/api/crew`); // 🟢 මෙය add කරන්න
+  console.log(`👥 Crew:        http://localhost:${PORT}/api/crew`); 
   console.log('🚀 ============================================');
-  console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`🔄 Press Ctrl+C to stop\n`);
+  
 });

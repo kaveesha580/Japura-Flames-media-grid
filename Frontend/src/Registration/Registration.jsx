@@ -263,23 +263,7 @@ function Registration() {
           )}
         </div>
 
-        <footer>
-          <div className="socials">
-            <a href="https://www.facebook.com/share/1DDVufvkJb/" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-facebook"></i>
-            </a>
-            <a href="https://www.instagram.com/jpura_flames?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-instagram"></i>
-            </a>
-            <a href="https://www.youtube.com/@Japuraflames" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-youtube"></i>
-            </a>
-            <a href="https://www.tiktok.com/@japuraflames" target="_blank" rel="noopener noreferrer">
-              <i className="fab fa-tiktok"></i>
-            </a>
-          </div>
-          <p>© 2026 Japuraflames. All Rights Reserved.</p>
-        </footer>
+        
       </div>
     </div>
   );

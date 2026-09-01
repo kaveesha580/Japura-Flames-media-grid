@@ -1732,9 +1732,7 @@
   border: 1px solid #a5d6a7;
 }
 
-/* ==========================================
-   RESPONSIVE
-   ========================================== */
+/* RESPONSIVE */
 @media (max-width: 768px) {
   .crewCheckboxItem {
     flex-wrap: wrap;

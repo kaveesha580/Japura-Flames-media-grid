@@ -54,7 +54,21 @@ const facebookPosts = [
     url: "https://web.facebook.com/Jpuraflames/posts/pfbid0ES2xs2UTD51jPMt2XMd8UM8UoCe1NiW9y27PVY5DHgGLdC4uQiJoagXzCz9HXuUel",
     height: 808,
   
-  }
+  },
+  {
+    url: "https://web.facebook.com/media/set/?set=a.1621734422643686&type=3&ref=embed_post",
+    height: 808,
+  
+  },
+  {
+    url: "https://web.facebook.com/media/set/?set=a.1628088238674971&type=3&ref=embed_post",
+    height: 808,
+  
+  },
+{
+  url :"https://www.facebook.com/media/set?vanity=Jpuraflames&set=a.1641951533955308",
+  height: 808,
+}
 ];
 
 const prideMembers = [
@@ -62,31 +76,29 @@ const prideMembers = [
     name: "Hasaru Nawarathna",
     role: "PRESIDENT",
     image: "/praide/1.jpg",
-    text: "Leading the J'pura Flames crew and shaping every story we tell.",
+  
   },
   {
     name: "Hiruni Randeniya",
     role: "SECRETARY",
     image: "/praide/2.jpg",
-    text: "Leading the J'pura Flames crew and shaping every story we tell.",
+    
   },
   { 
     name: "Nethmi Nimasha", 
     role: "ASSISTANT SECRETARY", 
     image: "/praide/3.jpg",
-    text: "efehjfbjsbbfbfksbfsbfshbjs " 
+     
   },
   { 
     name: "Natara Shihanza", 
     role: "ASSISTANT SECRETARY", 
     image: "/praide/4.jpg",
-    text: "efehjfbjsbbfbfksbfsbfshbjs " 
   },
   { 
     name: "Methsara Dilshan", 
     role: "TREASURER", 
     image: "/praide/5.jpg",
-    text: "efehjfbjsbbfbfksbfsbfshbjs " 
   },
   { 
     name: "Manuka Methsara", 
@@ -160,6 +172,8 @@ function Home() {
   const [profileMessage, setProfileMessage] = useState('');
   const [profileLoading, setProfileLoading] = useState(false);
   const mySectionRef = useRef(null);
+  const projectorContainerRef = useRef(null);
+const vtopRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -210,7 +224,53 @@ function Home() {
     }
   };
 
-  // 🟢 Booking status එක අනුව icon එක
+  // ඔයාගේ තියෙන useEffect ටිකට පස්සේ මේ useEffect එක add කරන්න
+useEffect(() => {
+  const handleProjectorScroll = () => {
+    const container = projectorContainerRef.current;
+    const vtop = vtopRef.current;
+    
+    if (!container || !vtop) return;
+    
+    const rect = container.getBoundingClientRect();
+    const containerTop = rect.top;
+    const containerHeight = container.offsetHeight;
+    const windowHeight = window.innerHeight;
+    
+    // container එක viewport එකේ තියෙනවද කියලා check කරන්න
+    const isVisible = containerTop < windowHeight && containerTop + containerHeight > 0;
+    
+    if (isVisible) {
+      // container එක viewport එකට ඇතුල් වෙන ප්‍රමාණය ගණනය කරන්න
+      const visibleHeight = Math.min(windowHeight, containerTop + containerHeight) - Math.max(0, containerTop);
+      const visibleRatio = visibleHeight / containerHeight;
+      
+      // scroll progress එක 0 සිට 1 දක්වා
+      const scrollProgress = Math.max(0, Math.min(1, 
+        (windowHeight - containerTop) / (windowHeight + containerHeight)
+      ));
+      
+      // වමට යන distance එක (0% සිට -100% දක්වා)
+      // මෙතන 100 වෙනුවට 80 දාලා අඩුවෙන් යන්නත් පුළුවන්
+      const translateX = -scrollProgress *30;
+      
+      // smooth transition එකක් සඳහා
+      vtop.style.transform = `translateX(${translateX}%)`;
+    }
+  };
+
+  window.addEventListener('scroll', handleProjectorScroll);
+  window.addEventListener('resize', handleProjectorScroll);
+  
+  // Initial call
+  handleProjectorScroll();
+  
+  return () => {
+    window.removeEventListener('scroll', handleProjectorScroll);
+    window.removeEventListener('resize', handleProjectorScroll);
+  };
+}, []);
+ 
   const getStatusIcon = (status) => {
     switch(status?.toLowerCase()) {
       case 'confirmed':
@@ -527,6 +587,7 @@ function Home() {
             {/* 🟢 Booking Requests with Cancel Message */}
            {/* 🟢 Booking Requests with Cancel Message & Complete Link */}
 <div className="my-recent-activity">
+  
   <h3>
     <FaCalendarAlt /> Booking Requests
     {bookingRequests.length > 0 && (
@@ -631,6 +692,9 @@ function Home() {
           </button>
         </div>
       )}
+    
+    
+    
     </div>
   ) : (
     <div className="no-bookings">
@@ -641,7 +705,12 @@ function Home() {
     </div>
   )}
 </div>
-          </div>
+<div className="bookingimg">
+    <img src="image/myimg.jpg"></img>
+    </div>
+
+    
+        </div>
         </section>
       )}
 
@@ -652,7 +721,7 @@ function Home() {
             <source src="/videos/home1.mp4" type="video/mp4" />
           </video>
           <div className="video-overlay">
-            <div className="logo">FLAMES</div></div>
+            <div className="logo">JAPURA FLAMES</div></div>
         </div>
 
         <div className="home-content">
@@ -669,14 +738,14 @@ function Home() {
             <br />
             <div className="hero-actions">
               <a href="#gallary" className="viewGalleryBtn">
-                View Gallery👉
+                View Gallery
               </a>
               <a 
                 href="" 
                 className="bookingBtn"
                 onClick={handleBookingClick}
               >
-                Booking👉
+                Booking
               </a>
             </div>
           </div>
@@ -703,15 +772,15 @@ function Home() {
               <span>— Who We Are</span>
               <h2>The voice and lens<br />of J'Pura.</h2>
               <p>J'pura Flames is the official student-run media unit of the University of Sri Jayewardenepura, capturing campus stories through photography, videography, design, broadcasting, and journalism.</p>
+            
             </div>
             <div className="about-stats">
-              <div><b>13+</b><small>Years on campus</small></div>
-              <div><b>12K+</b><small>Events covered</small></div>
-              <div><b>200+</b><small>Active crew</small></div>
-              <div><b>90K+</b><small>Followers</small></div>
+               <video className="bg-video"autoPlay muted loop playsInline >
+    <source src="/videos/home2.mp4" type="video/webm" />
+  </video>
             </div>
           </div>
-          <h3>One crew, every medium.</h3>
+          <h3>One crew, every medium.</h3>  
           <div className="services-grid">
             <article><i>📸</i><h4>Photography</h4><p>Match-day action, portraits and campus life, frame by frame.</p></article>
             <article><i>🎥</i><h4>Videography</h4><p>Highlight reels, event recaps and the moments between.</p></article>
@@ -720,7 +789,11 @@ function Home() {
             <article><i>✍️</i><h4>Article & Poetry</h4><p>Creative writing that captures the feeling behind the moment.</p></article>
             <article><i>🖥️</i><h4>IT & Marketing</h4><p>Digital experiences that power creativity and collaboration.</p></article>
             <article><i>👨‍💼</i><h4>HR</h4><p>Building a connected, motivated team that grows together.</p></article>
+            <div className="about-simg">
+              <img src="/image/st-image.jpg" alt="hi" />
+            </div>
           </div>
+          
         </div>
        
       </section>
@@ -737,7 +810,7 @@ function Home() {
                 <div>
                   <h3>{member.name}</h3>
                   <p>{member.role}</p>
-                  <small>{member.text || "Bringing creative campus stories to life."}</small>
+                  
                 </div>
               </article>
             </SwiperSlide>
@@ -747,8 +820,11 @@ function Home() {
 
       {/* Projects Section */}
       <section className="projects reveal-section" id="projects" ref={projectsRef}>
+        <div className="project-simg"><img src="/image/pr-st.jpg" alt="pr" /></div>
+        <div className="progect-overlayer">
         <div className="projects-header">
           <span className="section-label">— Our Work</span>
+         
           <h2>Featured Projects</h2>
           <p>Capturing moments, telling stories, and creating memories.</p>
         </div>
@@ -786,7 +862,8 @@ function Home() {
               </div>
             ))}
           </div>
-        )}
+        )}</div>
+        
       </section>
 
       {/* Gallery Section */}
@@ -812,7 +889,17 @@ function Home() {
             </SwiperSlide>
           ))}
         </Swiper>
+        
       </section>
+
+    <div className="projector-container" ref={projectorContainerRef}>
+  <div className="vtop" ref={vtopRef}></div>
+  <video autoPlay muted loop playsInline>
+    <source src="/videos/home2.mp4" type="video/webm" />
+  </video>
+  
+</div>
+  
 
       {/* Contact Section */}
       <section id="contact">
