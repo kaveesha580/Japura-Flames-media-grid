@@ -532,12 +532,7 @@ useEffect(() => {
                 <button className="my-action-btn" onClick={handleBookingClick}>
                   <FaCalendarAlt /> Book a Session
                 </button>
-                <button className="my-action-btn">
-                  <FaCamera /> My Gallery
-                </button>
-                <button className="my-action-btn">
-                  <FaChartBar /> My Analytics
-                </button>
+               
                 <button className="my-action-btn" onClick={toggleProfileEdit}>
                   <FaUser /> Edit Profile
                 </button>
