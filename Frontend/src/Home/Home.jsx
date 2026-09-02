@@ -11,8 +11,7 @@ import "swiper/css/navigation";
 import { 
   FaYoutube, FaFacebookF, FaInstagram, FaTiktok, 
   FaWhatsapp, FaEnvelope, FaPhone, FaLocationDot,
-  FaUser, FaRightFromBracket, FaChartBar, 
-  FaCamera, FaHeart, FaComment, FaEye, FaClock,  FaHourglassHalf
+  FaUser, FaRightFromBracket, FaClock, FaHourglassHalf
 } from 'react-icons/fa6';
 import { 
    FaCalendarAlt,
@@ -242,9 +241,6 @@ useEffect(() => {
     
     if (isVisible) {
       // container එක viewport එකට ඇතුල් වෙන ප්‍රමාණය ගණනය කරන්න
-      const visibleHeight = Math.min(windowHeight, containerTop + containerHeight) - Math.max(0, containerTop);
-      const visibleRatio = visibleHeight / containerHeight;
-      
       // scroll progress එක 0 සිට 1 දක්වා
       const scrollProgress = Math.max(0, Math.min(1, 
         (windowHeight - containerTop) / (windowHeight + containerHeight)
@@ -387,14 +383,6 @@ useEffect(() => {
       setProfileMessage('Server error while updating profile.');
     } finally {
       setProfileLoading(false);
-    }
-  };
-
-  const toggleMySection = () => {
-    if (isLoggedIn) {
-      setShowMySection(!showMySection);
-    } else {
-      navigate('/Login');
     }
   };
 

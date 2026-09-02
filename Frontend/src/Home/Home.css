@@ -1707,367 +1707,7 @@ padding-top: 150px;
 
 
 
-/*  RESPONSIVE STYLES*/
-@media (max-width: 1024px) {
-  .home .left .line2 {
-    font-size: 2.8rem;
-  }
 
-  .home .left .line3 {
-    font-size: 1rem;
-  }
-
-  .home-content {
-    padding: 4rem 2rem;
-  }
-}
-
-
-@media (max-width: 800px) {
-  .about-overview,
-  .services-grid {
-    grid-template-columns: 1fr;
-    gap: 1.25rem;
-  }
-
-  .about-stats div {
-    min-height: 125px;
-    padding: 1.3rem;
-  }
-
-  .services-grid article {
-    min-height: auto;
-    padding: 2rem;
-  }
-
-  #contact {
-    padding: 2rem;
-    grid-template-columns: 1fr 1fr;
-  }
-}
-
-
-@media (max-width: 768px) {
-  header {
-    padding: 0.8rem 1rem;
-  }
-
-  .header-container {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-  }
-
-  nav {
-    flex-direction: column;
-    align-items: flex-start;
-    width: 100%;
-  }
-
-  .nav-links {
-    gap: 0.75rem 1rem;
-    justify-content: flex-start;
-  }
-
-  .nav-links a {
-    font-size: 0.9rem;
-  }
-
-  .home {
-    min-height: 100vh;
-  }
-
-  .home-content {
-    padding: 3rem 1.5rem;
-  }
-
-  .home .left {
-    padding: 2rem 1.5rem;
-    border-radius: 1.5rem;
-    min-height: 50vh;
-  }
-
-  .home .left .line1 {
-    font-size: 0.8rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .home .left .line2 {
-    font-size: 2rem;
-    line-height: 1.15;
-  }
-
-  .home .left .line3 {
-    font-size: 0.95rem;
-    max-width: 100%;
-    margin-bottom: 1.5rem;
-  }
-
-  .hero-actions {
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-
-  .viewGalleryBtn,
-  .bookingBtn {
-    width: 100%;
-    max-width: 280px;
-    padding: 12px 20px;
-    font-size: 1rem;
-  }
-
-  .home-services {
-    gap: 0.8rem 2rem;
-    padding: 1rem;
-  }
-
-  .home-services span {
-    font-size: 0.85rem;
-  }
-
-  #about {
-    padding: 2.5rem 1rem;
-  }
-
-  .about-overview {
-    gap: 2rem;
-    margin-bottom: 2rem;
-  }
-
-  .about-intro h2 {
-    font-size: 2.2rem;
-  }
-
-  .about-stats {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .about-img {
-    width: 100%;
-    padding-left: 0;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1.5rem;
-  }
-
-  .about-img img {
-    width: 220px;
-    height: 220px;
-  }
-
-  .services-grid article {
-    padding: 1.5rem;
-  }
-
-  .pride {
-    padding: 4rem 1rem;
-  }
-
-  .secretary-card {
-    grid-template-columns: 1fr;
-  }
-
-  .secretary-card > div {
-    padding: 1.5rem;
-  }
-
-  .member-card {
-    min-height: auto;
-  }
-
-  .members-slider {
-    padding-inline: 2.2rem !important;
-  }
-
-  .gallary {
-    padding: 3rem 1rem;
-  }
-
-  .gallary-intro {
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .gallary-intro img {
-    width: 100%;
-    height: 180px;
-  }
-
-  .facebook-slider {
-    padding: 1rem 2rem 2.5rem !important;
-  }
-
-  .site-footer {
-    padding: 2.5rem 1rem 1.25rem;
-  }
-
-  #contact {
-    padding: 2rem 1rem;
-    grid-template-columns: 1fr;
-  }
-
-  .social-icons {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .social-icon {
-    width: 100%;
-    max-width: 220px;
-    justify-content: center;
-  }
-
-  /* MY Section Mobile */
-  .my-section {
-    padding: 20px;
-  }
-
-  .my-stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .my-stat-card {
-    padding: 15px;
-  }
-
-  .my-stat-card h3 {
-    font-size: 22px;
-  }
-
-  .my-actions-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .my-action-btn {
-    padding: 12px 15px;
-    font-size: 13px;
-  }
-
-  .my-section-header h2 {
-    font-size: 18px;
-  }
-
-  .my-section-header h2 svg {
-    font-size: 18px;
-  }
-
-  .close-my-section {
-    font-size: 18px;
-    padding: 4px 14px;
-  }
-
-  .my-activity-item {
-    padding: 12px 15px;
-  }
-
-  .my-activity-item p {
-    font-size: 13px;
-  }
-
-  .nav-links {
-    gap: 12px;
-    flex-wrap: wrap;
-  }
-
-  .my-tab-btn {
-    padding: 6px 16px;
-    font-size: 12px;
-  }
-}
-
-
-@media (max-width: 600px) {
-  .pride {
-    padding: 4rem 1.25rem;
-  }
-
-  .members-slider {
-    padding-inline: 2.5rem !important;
-  }
-}
-
-@media (max-width: 500px) {
-  .my-stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-
-  .my-actions-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .my-stat-card h3 {
-    font-size: 20px;
-  }
-
-  .my-stat-icon {
-    font-size: 24px;
-  }
-
-  .my-section {
-    padding: 15px;
-  }
-}
-
-
-@media (max-width: 480px) {
-  .home .left .line2 {
-    font-size: 1.6rem;
-  }
-
-  .home .left .line3 {
-    font-size: 0.85rem;
-  }
-
-  .home-content {
-    padding: 2rem 1rem;
-  }
-
-  .home .left {
-    padding: 1.5rem 1rem;
-    border-radius: 1rem;
-  }
-
-  .video-background video {
-    object-fit: cover;
-  }
-
-  .projects-grid {
-    grid-template-columns: 1fr;
-    padding: 0 10px;
-  }
-
-  .projects-header h2 {
-    font-size: 28px;
-  }
-
-  .project-image img {
-    height: 180px;
-  }
-}
-
-
-@media (max-width: 400px) {
-  .my-stats-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-
-  .my-stat-card {
-    padding: 12px;
-  }
-
-  .my-stat-card h3 {
-    font-size: 18px;
-  }
-
-  .my-stat-card p {
-    font-size: 11px;
-  }
-}
 
 /* PROFILE EDIT CARD */
 .profile-edit-card {
@@ -2255,5 +1895,311 @@ padding-top: 150px;
   }
   60% {
     transform: translateX(-50%) translateY(-5px);
+  }
+}
+
+/* Phone layout */
+@media (max-width: 650px) {
+  .home {
+    min-height: 100svh;
+  }
+
+  .home-content {
+    padding: 5rem 1rem 2rem;
+  }
+
+  .home .home-text {
+    min-height: auto;
+    padding: 3.5rem 1.25rem 2.5rem;
+    border-radius: 24px;
+  }
+
+  .logo {
+    font-size: 1.65rem;
+    letter-spacing: 1px;
+    padding-top: 1rem;
+  }
+
+  .home .home-text .line1 {
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    margin-bottom: 1.25rem;
+  }
+
+  .home .home-text .line2 {
+    font-size: clamp(2rem, 10vw, 3rem);
+    line-height: 1.08;
+    margin-bottom: 1.25rem;
+  }
+
+  .home .home-text .line3 {
+    max-width: 100%;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    margin-bottom: 1.75rem;
+  }
+
+  .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+  }
+
+  .viewGalleryBtn,
+  .bookingBtn {
+    width: 100%;
+    padding: 12px 20px;
+    font-size: 1rem;
+  }
+
+  header {
+    padding: 0.7rem 1rem;
+  }
+
+  .header-container {
+    justify-content: center;
+    gap: 0.65rem;
+  }
+
+  .logo-img {
+    width: 58px;
+    height: 58px;
+  }
+
+  nav,
+  .nav-links {
+    justify-content: center;
+    gap: 0.45rem 0.75rem;
+    width: 100%;
+  }
+
+  .nav-links a,
+  .my-tab-link {
+    font-size: 0.78rem;
+    padding: 5px 7px;
+  }
+
+  .my-tab-link.active {
+    padding: 6px 11px;
+  }
+
+  .user-profile {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .login-nav-btn,
+  .user-profile-btn,
+  .logout-nav-btn {
+    padding: 7px 12px;
+    font-size: 0.75rem;
+  }
+
+  .home-services {
+    padding: 0.85rem 1rem;
+  }
+
+  .home-services span {
+    font-size: 0.85rem;
+  }
+
+  #about {
+    padding: 4.5rem 1.25rem 2.5rem;
+  }
+
+  .about-overview {
+    gap: 2rem;
+    grid-template-columns: 1fr;
+    margin-bottom: 2rem;
+  }
+
+  .about-intro h2 {
+    font-size: clamp(2.3rem, 13vw, 3.5rem);
+  }
+
+  .about-intro p {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
+
+  .about-stats {
+    height: 260px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services-grid article {
+    min-height: auto;
+    max-height: none;
+    padding: 1.75rem;
+  }
+
+  .about-simg {
+    height: auto;
+    max-width: 100%;
+    padding-left: 0;
+  }
+
+  #pride,
+  .pride {
+    padding: 3.5rem 1.25rem;
+  }
+
+  .pride > h2 {
+    font-size: clamp(2.3rem, 12vw, 3.5rem);
+    padding-left: 0;
+  }
+
+  .members-slider {
+    padding: 1.5rem 2rem 3rem !important;
+  }
+
+  .member-card img {
+    width: 145px;
+    height: 145px;
+  }
+
+  .member-card:hover {
+    transform: none;
+  }
+
+  #projects {
+    position: relative;
+    min-height: auto;
+    padding: 5rem 1.25rem 3rem;
+    overflow: hidden;
+  }
+
+  .progect-overlayer {
+    height: auto;
+    margin-top: 0;
+    position: relative;
+  }
+
+  .project-simg {
+    height: 100%;
+    padding-left: 0;
+  }
+
+  .project-simg img {
+    width: 120px;
+    height: 120px;
+  }
+
+  .projects-header h2 {
+    font-size: 2.2rem;
+  }
+
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .project-image img {
+    height: 190px;
+  }
+
+  .gallary {
+    padding: 3rem 1rem;
+  }
+
+  .gallery-header h2 {
+    font-size: 2.35rem;
+  }
+
+  .gallary-intro {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .gallary-intro img {
+    height: 135px;
+    width: 100%;
+  }
+
+  .gallary-intro h2 {
+    font-size: 2rem;
+  }
+
+  .facebook-slider {
+    padding: 1rem 2rem 2.5rem !important;
+  }
+
+  .facebook-post {
+    height: 560px !important;
+  }
+
+  #contact {
+    grid-template-columns: 1fr;
+    padding: 2.5rem 1.25rem;
+  }
+
+  .contact-info-item {
+    padding: 1rem;
+  }
+
+  .social-icon {
+    flex: 1 1 40%;
+    justify-content: center;
+    padding: 0.65rem 0.75rem;
+  }
+
+  .site-footer {
+    padding: 2.5rem 1.25rem 1.25rem;
+  }
+
+  .footer-links {
+    gap: 1rem;
+  }
+
+  .my-section {
+    align-items: stretch;
+    padding: 1.25rem;
+  }
+
+  .my-section-header {
+    margin-bottom: 1.25rem;
+  }
+
+  .my-section-header h2 {
+    font-size: 1.15rem;
+  }
+
+  .my-stats-grid,
+  .my-actions-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .my-action-btn {
+    margin-bottom: 0;
+  }
+
+  .my-activity-item {
+    padding: 0.85rem 0.75rem;
+  }
+
+  .booking-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .bookingimg {
+    display: none;
+  }
+
+  .projector-container {
+    height: 360px;
+  }
+
+  .swiper-button-next,
+  .swiper-button-prev {
+    width: 34px !important;
+    height: 34px !important;
   }
 }

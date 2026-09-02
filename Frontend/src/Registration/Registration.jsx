@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRegistration } from './Registration';
 import './Registration.css';
 
 function Registration() {
+  const [isLeaving, setIsLeaving] = useState(false);
   const {
     formData,
     errors,
@@ -18,8 +19,16 @@ function Registration() {
     goToLogin,
   } = useRegistration();
 
+  const handleBackToLogin = () => {
+    if (isLeaving) return;
+
+    setIsLeaving(true);
+    window.setTimeout(goToLogin, 650);
+  };
+
   return (
-    <div className='loginGlassCard'>
+    <div className={`registration-page ${isLeaving ? 'is-leaving' : ''}`}>
+      <div className="registration-image" role="img" aria-label="Japura Flames media team" />
       <div className="registration-container">
         <div className="accent-bar"></div>
 
@@ -244,11 +253,11 @@ function Registration() {
                     <button 
                       type="button" 
                       className="btn-back-to-login" 
-                      onClick={goToLogin}
-                      disabled={loading}
+                      onClick={handleBackToLogin}
+                      disabled={loading || isLeaving}
                     >
                       <i className="fa-solid fa-arrow-left" style={{ marginRight: '8px' }}></i>
-                      Back to Login
+                      {isLeaving ? 'Returning to Login...' : 'Back to Login'}
                     </button>
                   </div>
                 </div>
