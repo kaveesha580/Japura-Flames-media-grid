@@ -841,7 +841,7 @@ h4 {
   content: "";
   position: absolute;
   inset: 3px;
-  background: #0f2027;
+  background: #ffffff;
   border-radius: 50%;
   z-index: 1;
 }

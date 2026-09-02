@@ -1235,25 +1235,7 @@ padding-top: 150px;
   
 }
 
-.bookingimg{
- top: 0;
-  left: 0;
-  width: 0%;
-  height: 100%;
-  z-index: 0;
-  position: absolute;
-  align-items:flex-end;
-  display: flex;
-  
-}
-.bookingimg img{
-  width: 400px;
-  height: 400px;
-  margin-bottom: 50px;
-  margin-left:1000px;
- 
 
-}
 
 
 .my-dashboard {
@@ -1896,6 +1878,85 @@ padding-top: 150px;
   60% {
     transform: translateX(-50%) translateY(-5px);
   }
+}
+
+/* My section colors for the light page background */
+.my-section {
+  background: #fffaf5;
+  border-bottom-color: var(--orange);
+}
+
+.my-section-header {
+  border-bottom-color: rgba(255, 98, 1, 0.2);
+}
+
+.my-section-header h2,
+.my-quick-actions h3,
+.my-recent-activity h3,
+.profile-edit-card h3 {
+  color: #241200;
+}
+
+.my-section-header h2 svg,
+.my-stat-icon {
+  color: var(--orange);
+}
+
+.my-stat-card,
+.profile-edit-card {
+  background: #ffffff;
+  border-color: rgba(255, 98, 1, 0.2);
+  box-shadow: 0 8px 24px rgba(82, 43, 0, 0.08);
+}
+
+.my-stat-card:hover {
+  background: #fff3df;
+  border-color: var(--orange);
+}
+
+.my-stat-card h3,
+.my-activity-item p {
+  color: #241200;
+}
+
+.my-stat-card p,
+.my-activity-item small,
+.profile-edit-form .form-group label {
+  color: #6d6259;
+}
+
+.my-activity-list {
+  background: #fff1dd;
+  border-color: rgba(255, 98, 1, 0.22);
+  box-shadow: 0 8px 24px rgba(82, 43, 0, 0.08);
+}
+
+.my-activity-item {
+  border-bottom-color: rgba(98, 59, 16, 0.12);
+}
+
+.my-activity-item:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.my-activity-dot {
+  background: var(--orange);
+}
+
+.profile-edit-form .form-group input {
+  background: #fffaf5;
+  border-color: rgba(98, 59, 16, 0.2);
+  color: #241200;
+}
+
+.profile-edit-form .form-group input:focus {
+  border-color: var(--orange);
+  background: #ffffff;
+}
+
+.no-bookings p,
+.booking-loading {
+  color: #6d6259;
 }
 
 /* Phone layout */

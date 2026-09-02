@@ -688,9 +688,7 @@ useEffect(() => {
     </div>
   )}
 </div>
-<div className="bookingimg">
-    <img src="image/myimg.jpg"></img>
-    </div>
+
 
     
         </div>

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import styles from './Login.module.css';
 import myLogo from '../assets/logo.png';
-
+setTimeout(() => navigate('/'), 3000);setTimeout(() => navigate('/'), 3000);
 const Login = () => {
   const navigate = useNavigate();
   
@@ -21,6 +21,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [resetLoading, setResetLoading] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -63,7 +64,8 @@ const Login = () => {
         localStorage.setItem('userName', user.fullName || formData.email.split('@')[0]);
         localStorage.setItem('userPhone', user.phone || '');
         
-        setTimeout(() => navigate('/'), 1500);
+        setIsRedirecting(true);
+        setTimeout(() => navigate('/'), 3000);
       } else {
         setError(res.data.message || 'Login failed');
       }
@@ -156,6 +158,24 @@ const Login = () => {
 
   return (
     <div className={`${styles.loginContainer} ${isRegistering ? styles.isRegistering : ''}`}>
+      {isRedirecting && (
+        <div className={styles.loadingScreen} role="status" aria-live="polite">
+          <video
+            className={styles.loadingVideo}
+            src="/videos/Logo.webm"
+            autoPlay
+            muted
+            playsInline
+          />
+          <div className={styles.loadingScrim} />
+          <div className={styles.loadingContent}>
+            <p className={styles.loadingText}>Welcome to Japura Flames</p>
+            <div className={styles.loadingBar} aria-label="Loading">
+              <span />
+            </div>
+          </div>
+        </div>
+      )}
       <button className={styles.backHomeBtn} onClick={goToHome}>
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
           <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>

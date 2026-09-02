@@ -63,6 +63,78 @@
   gap: 50px;
 }
 
+.loadingScreen {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f0804;
+  animation: loadingFadeIn 250ms ease-out;
+}
+
+.loadingVideo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.loadingScrim {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 8, 4, 0.35);
+}
+
+.loadingContent {
+  position: relative;
+  z-index: 1;
+  width: min(360px, calc(100% - 40px));
+  text-align: center;
+}
+
+.loadingText {
+  margin: 0;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.7);
+  color: #ffc45e;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+
+.loadingBar {
+  height: 6px;
+  margin-top: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 196, 94, 0.65);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 16px rgba(255, 138, 0, 0.35);
+}
+
+.loadingBar span {
+  display: block;
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #ff8a00, #ffc45e, #e52e71);
+  animation: loadingProgress 3000ms linear forwards;
+}
+
+@keyframes loadingProgress {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+@keyframes loadingFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .loginimg{
  background-image: url('/image/login.jpg');
   background-size: cover;
@@ -143,7 +215,7 @@
   content: '';
   position: absolute;
   inset: 3px;
-  background: #0f2027;
+  background: #ffffff;
   border-radius: 50%;
   z-index: 1;
 }
