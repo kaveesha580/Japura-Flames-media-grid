@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import './Booking.css';
+import { API_BASE } from '../config';
 
-const BOOKING_API_URL = 'http://localhost:5000/api/bookings';
+const BOOKING_API_URL = `${API_BASE}/api/bookings`;
 
 function Booking() {
   const [formData, setFormData] = useState({

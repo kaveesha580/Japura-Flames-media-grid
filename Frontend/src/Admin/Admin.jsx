@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './Admin.module.css';
+import { API_BASE } from '../config';
 
-const API_URL = 'http://localhost:5000/api/projects';
-const BOOKING_API_URL = 'http://localhost:5000/api/bookings';
-const CREW_API_URL = 'http://localhost:5000/api/crew';
+const API_URL = `${API_BASE}/api/projects`;
+const BOOKING_API_URL = `${API_BASE}/api/bookings`;
+const CREW_API_URL = `${API_BASE}/api/crew`;
 
 function Admin() {
   // ---------- Authentication State ----------
@@ -75,7 +76,7 @@ function Admin() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/auth/users');
+      const res = await fetch(`${API_BASE}/api/auth/users`);
       const data = await res.json();
       if (Array.isArray(data)) {
         setUsers(data);
@@ -519,8 +520,6 @@ function Admin() {
     
     setLoading(true);
     try {
-      console.log('🗑️ Deleting booking ID:', id);
-      
       const response = await fetch(`${BOOKING_API_URL}/${id}`, {
         method: 'DELETE',
         headers: {
@@ -529,7 +528,6 @@ function Admin() {
       });
       
       const data = await response.json();
-      console.log('Response:', data);
       
       if (response.ok) {
         setMessage('🗑️ Booking deleted successfully!');
@@ -546,14 +544,25 @@ function Admin() {
   };
 
   // ---------- Password Verification ----------
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (passwordInput === 'admin123') {
-      setIsAuthenticated(true);
-      setAuthMessage('');
-      setPasswordInput('');
-    } else {
-      setAuthMessage('❌ Incorrect password!');
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/admin-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: passwordInput }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setIsAuthenticated(true);
+        setAuthMessage('');
+        setPasswordInput('');
+      } else {
+        setAuthMessage(data.message || 'Incorrect password!');
+        setPasswordInput('');
+      }
+    } catch {
+      setAuthMessage('Failed to connect to server');
       setPasswordInput('');
     }
   };
@@ -595,11 +604,7 @@ function Admin() {
     setLoading(true);
     setMessage('');
 
-    const projectData = {
-      ...formData,
-      eventDate: formData.eventDate,
-      eventLocation: formData.eventLocation
-    };
+    const projectData = { ...formData };
 
     try {
       if (editingId) {

@@ -1,13 +1,14 @@
-import React, { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import './Home.css';
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Navigation } from "swiper/modules";
 import { useReveal } from "./Home.js";
 import { useNavigate } from "react-router-dom";
+import { API_BASE } from '../config';
 import "swiper/css";
 import "swiper/css/navigation";
 
-// ✅ User icons
+// User icons
 import { 
   FaYoutube, FaFacebookF, FaInstagram, FaTiktok, 
   FaWhatsapp, FaEnvelope, FaPhone, FaLocationDot,
@@ -19,8 +20,8 @@ import {
   FaTimesCircle
 } from 'react-icons/fa';
 
-const API_URL = 'http://localhost:5000/api/projects';
-const BOOKING_API_URL = 'http://localhost:5000/api/bookings';
+const API_URL = `${API_BASE}/api/projects`;
+const BOOKING_API_URL = `${API_BASE}/api/bookings`;
 
 
 
@@ -355,7 +356,7 @@ useEffect(() => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch('http://localhost:5000/api/auth/me', {
+      const response = await fetch(`${API_BASE}/api/auth/me`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

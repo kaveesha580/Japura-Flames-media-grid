@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import styles from './Login.module.css';
 import myLogo from '../assets/logo.png';
-setTimeout(() => navigate('/'), 3000);setTimeout(() => navigate('/'), 3000);
+import { API_BASE } from '../config';
 const Login = () => {
   const navigate = useNavigate();
   
@@ -49,16 +48,22 @@ const Login = () => {
     }
     
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/login', {
-        email: formData.email,
-        password: formData.password
+      const res = await fetch(`${API_BASE}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
       });
       
-      if (res.data.success) {
+      const data = await res.json();
+      
+      if (data.success) {
         setSuccess('Login Successful!');
         
-        const user = res.data.user || {};
-        localStorage.setItem('token', res.data.token);
+        const user = data.user || {};
+        localStorage.setItem('token', data.token);
         localStorage.setItem('userEmail', user.email || formData.email);
         localStorage.setItem('userId', user.id || '');
         localStorage.setItem('userName', user.fullName || formData.email.split('@')[0]);
@@ -67,11 +72,11 @@ const Login = () => {
         setIsRedirecting(true);
         setTimeout(() => navigate('/'), 3000);
       } else {
-        setError(res.data.message || 'Login failed');
+        setError(data.message || 'Login failed');
       }
     } catch (err) {
       console.error('Login Error:', err);
-      setError(err.response?.data?.message || 'Login failed. Please check your credentials.');
+      setError('Login failed. Please check your credentials.');
     } finally {
       setLoading(false);
     }
@@ -113,23 +118,29 @@ const Login = () => {
     }
     
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/forgot-password', {
-        email,
-        phone,
-        newPassword
+      const res = await fetch(`${API_BASE}/api/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email,
+          phone,
+          newPassword
+        }),
       });
       
-      if (res.data.success) {
-        setSuccess(res.data.message || 'Password reset successfully');
+      const data = await res.json();
+      
+      if (data.success) {
+        setSuccess(data.message || 'Password reset successfully');
         setResetData({ email: '', phone: '', newPassword: '', confirmPassword: '' });
         setTimeout(() => {
           setIsForgotView(false);
         }, 2000);
       } else {
-        setError(res.data.message || 'Failed to reset password');
+        setError(data.message || 'Failed to reset password');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to reset password');
+      setError('Failed to reset password');
     } finally {
       setResetLoading(false);
     }

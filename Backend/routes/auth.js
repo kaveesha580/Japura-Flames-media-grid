@@ -57,8 +57,6 @@ router.post('/login', async (req, res) => {
 
     const userData = await User.getProfile(user._id);
 
-    console.log(`✅ User logged in: ${email}`);
-
     res.json({
       success: true,
       token,
@@ -74,7 +72,6 @@ router.post('/login', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('❌ Login Error:', err.message);
     res.status(500).json({
       success: false,
       message: 'Server Error'
@@ -141,8 +138,6 @@ router.post('/register', async (req, res) => {
 
     const userData = await User.getProfile(user._id);
 
-    console.log(`✅ User registered: ${email} (ID: ${user._id})`);
-
     res.status(201).json({
       success: true,
       message: 'Registration successful!',
@@ -158,7 +153,6 @@ router.post('/register', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('❌ Registration Error:', err.message);
     
     if (err.code === 11000) {
       return res.status(409).json({
@@ -212,15 +206,12 @@ router.post('/forgot-password', async (req, res) => {
     user.password = newPassword;
     await user.save();
 
-    console.log(`✅ Password reset by phone for: ${email}`);
-
     res.json({ 
       success: true, 
       message: 'Password has been reset successfully. You can now login.' 
     });
 
   } catch (error) {
-    console.error('❌ Forgot Password Error:', error.message);
     res.status(500).json({ 
       success: false, 
       message: 'Server Error' 
@@ -264,7 +255,6 @@ router.get('/me', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Get User Error:', error.message);
     
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
@@ -332,7 +322,6 @@ router.put('/me', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Update Profile Error:', error.message);
 
     if (error.name === 'JsonWebTokenError') {
       return res.status(401).json({
@@ -360,7 +349,6 @@ router.get('/users', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Get Users Error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Failed to get users'
@@ -391,7 +379,6 @@ router.get('/check-email', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('❌ Check Email Error:', error.message);
     res.status(500).json({
       success: false,
       message: 'Server Error'
@@ -399,76 +386,18 @@ router.get('/check-email', async (req, res) => {
   }
 });
 
-router.put('/change-password', async (req, res) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
+router.post('/admin-login', async (req, res) => {
+  const { password } = req.body;
 
-    if (!token) {
-      return res.status(401).json({
-        success: false,
-        message: 'No token provided'
-      });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your_secret_key');
-    const { currentPassword, newPassword } = req.body;
-
-    if (!currentPassword || !newPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Current password and new password are required'
-      });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: 'New password must be at least 6 characters'
-      });
-    }
-
-    const user = await User.findById(decoded.user.id).select('+password');
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
-    }
-
-    const isMatch = await user.comparePassword(currentPassword);
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: 'Current password is incorrect'
-      });
-    }
-
-    user.password = newPassword;
-    await user.save();
-
-    console.log(`✅ Password changed for: ${user.email}`);
-
-    res.json({
-      success: true,
-      message: 'Password changed successfully'
-    });
-
-  } catch (error) {
-    console.error('❌ Change Password Error:', error.message);
-
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid token'
-      });
-    }
-
-    res.status(500).json({
-      success: false,
-      message: 'Server Error'
-    });
+  if (!password) {
+    return res.status(400).json({ success: false, message: 'Password is required' });
   }
+
+  if (password === process.env.ADMIN_PASSWORD) {
+    return res.json({ success: true, message: 'Admin authenticated' });
+  }
+
+  return res.status(401).json({ success: false, message: 'Incorrect password' });
 });
 
 module.exports = router;

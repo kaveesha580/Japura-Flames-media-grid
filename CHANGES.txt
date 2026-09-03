@@ -1,0 +1,185 @@
+================================================================================
+JAPURA FLAMES - PROJECT CLEANUP & REFACTORING LOG
+================================================================================
+Date: 2026-09-03
+Project: Japura-Flames-media-grid (React + Vite Frontend / Express + MongoDB Backend)
+
+This document records all changes made during the project cleanup. It helps
+other developers understand what was removed, why, and where important
+configuration now lives.
+
+================================================================================
+1. CRITICAL BUG FIXES
+================================================================================
+- Frontend/src/Login/Login.jsx (line 6)
+  REMOVED: A module-scope "setTimeout(() => navigate('/'), 3000)" line that ran
+  at import time. This referenced an undefined `navigate` variable (throwing a
+  ReferenceError on app load) AND would have redirected users off any page after
+  3 seconds. This was accidental leftover code.
+
+================================================================================
+2. ENVIRONMENT / SECURITY CHANGES
+================================================================================
+- Backend/.env
+  ADDED:
+    NODE_ENV=development
+    ADMIN_PASSWORD=admin123          (admin dashboard password moved here)
+
+- Backend/.env.example  (NEW FILE)
+  Added a template so developers can copy it to .env. Never commit .env.
+
+- Backend/.gitignore
+  ADDED `.env` entry — the .env file (containing JWT_SECRET, MONGODB_URI,
+  ADMIN_PASSWORD) should NEVER be committed to git.
+
+- Frontend/.env  (NEW FILE)
+    VITE_API_URL=http://localhost:5000
+  This is the single source of truth for the backend URL (see section 3).
+
+================================================================================
+3. API BASE URL CENTRALIZATION (REFACTOR)
+================================================================================
+Previously `http://localhost:5000` was hardcoded in 15 places across 6 files.
+This made it impossible to change the backend URL without editing every file.
+
+CHANGE: All API calls now import from a single config:
+  - Frontend/src/config.js  (NEW FILE)
+      export const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000'
+
+  - The URL is read from Frontend/.env (VITE_API_URL)
+  - To change the backend URL (e.g. for production), edit Frontend/.env only.
+
+Files updated:
+  - Frontend/src/Admin/Admin.jsx
+  - Frontend/src/Home/Home.jsx
+  - Frontend/src/Booking/Booking.jsx
+  - Frontend/src/Login/Login.jsx
+  - Frontend/src/Registration/Registration.js
+
+================================================================================
+4. ADMIN PASSWORD MOVED TO BACKEND (SECURITY)
+================================================================================
+Before: The admin password `admin123` was hardcoded in client-side JS
+(Frontend/src/Admin/Admin.jsx), visible to anyone viewing the browser source.
+
+After:
+  - Backend/routes/auth.js  ADDED NEW ENDPOINT:
+      POST /api/auth/admin-login
+        body: { "password": "..." }
+        Checks password against process.env.ADMIN_PASSWORD (from Backend/.env)
+        Returns { success: true } on match, 401 on mismatch.
+  - Frontend/src/Admin/Admin.jsx `handleLogin` now calls this endpoint
+    instead of comparing to a hardcoded string.
+  - The password now lives ONLY in Backend/.env
+
+To change the admin password, edit ADMIN_PASSWORD in Backend/.env.
+
+================================================================================
+5. REMOVED UNUSED DEPENDENCIES
+================================================================================
+Frontend/package.json:
+  - REMOVED axios            (was only used in Login.jsx; all other files used fetch())
+  - REMOVED @types/react     (no TypeScript in this project)
+  - REMOVED @types/react-dom (no TypeScript in this project)
+
+Login.jsx now uses native fetch() for its two API calls, consistent with the
+rest of the codebase. (axios removed from package.json AND all imports.)
+
+================================================================================
+6. DELETED DEAD / UNUSED FILES
+================================================================================
+- Frontend/src/Admin/AdminLogin.jsx     (1185-line OLD duplicate of Admin.jsx,
+                                         never imported anywhere)
+- Frontend/src/App.css                  (empty file, never imported)
+- Frontend/src/assets/hero.png          (never referenced)
+- package.json (root)                   (only contained duplicate swiper dep;
+                                         no scripts/metadata)
+- package-lock.json (root)              (paired with root package.json)
+- node_modules/ (root)                  (redundant duplicate of Frontend deps)
+- Frontend/public/videos/home3.mp4      (never referenced)
+- Frontend/public/videos/dc.webm        (never referenced)
+- Frontend/public/videos/as.mp4         (never referenced)
+- Frontend/public/videos/ac.webm        (never referenced)
+- Frontend/public/image/topback.jpg     (never referenced)
+- Frontend/public/image/myimg.jpg       (never referenced)
+- Frontend/dist/                        (stale build output; gitignored)
+
+================================================================================
+7. UNUSED IMPORT CLEANUP
+================================================================================
+Removed the unused `import React` default (not needed with the modern JSX
+transform) from:
+  - Frontend/src/Home/Home.jsx
+  - Frontend/src/Admin/Admin.jsx
+  - Frontend/src/Booking/Booking.jsx
+  - Frontend/src/Login/Login.jsx
+  - Frontend/src/Registration/Registration.jsx
+
+================================================================================
+8. REMOVED UNUSED BACKEND ROUTES
+================================================================================
+- Backend/routes/auth.js     REMOVED PUT /change-password
+                             (fully implemented but never called by the frontend)
+- Backend/routes/bookings.js REMOVED GET  /:id/crew
+- Backend/routes/bookings.js REMOVED DELETE /:id/crew/:crewId
+- Backend/server.js          REMOVED mention of the non-existent
+                             `/api/auth/check-username` endpoint in the test
+                             route, and ADDED the new admin-login endpoint there.
+
+================================================================================
+9. CONSOLE LOG CLEANUP
+================================================================================
+Removed decorative / informational console.log statements across the backend
+(server.js, routes/auth.js, routes/projects.js, routes/bookings.js, routes/crew.js).
+This included emoji banners, per-request body logging, and success messages.
+Kept meaningful console.error in error handlers, but removed stack-trace noise.
+
+Frontend:
+  - Admin.jsx: removed debug console.log for deleting bookings / response.
+
+================================================================================
+10. CODE SIMPLIFICATION
+================================================================================
+- Frontend/src/Admin/Admin.jsx handleSubmit:
+  Removed redundant re-assignment of eventDate/eventLocation (they were being
+  spread then overwritten with the same values). Now just `{ ...formData }`.
+
+================================================================================
+11. VERIFICATION
+================================================================================
+- `npm run lint`  (oxlint): PASSES (only pre-existing unused-catch-param warnings)
+- `npm run build` (vite):   PASSES (83 modules transformed)
+- Backend modules all load successfully with `node`.
+
+================================================================================
+12. KNOWN REMAINING ISSUES (NOT FIXED / OUT OF SCOPE)
+================================================================================
+These work but could be improved in a future pass. Documented for awareness:
+- Admin.jsx is still a large (1300+ line) component — could be split into tabs.
+- Home.jsx is large (940+ lines) — could be split into section components.
+- Images (crew photos, project images, payment slips) are stored as base64 in
+  MongoDB — consider cloud storage (S3/Cloudinary) for production.
+- No server-side auth middleware protects /api/projects, /api/bookings,
+  /api/crew CRUD endpoints (anyone can call them directly).
+- JWT_SECRET has a fallback default in auth.js — set a strong value in .env.
+- Backend response formats are inconsistent (some return raw arrays, some wrap
+  in { success, message, data }).
+- No test framework is configured.
+
+================================================================================
+HOW TO SET UP AFTER CLONING
+================================================================================
+Backend:
+  1. cd Backend
+  2. cp .env.example .env  (then fill in real values)
+  3. npm install
+  4. npm run dev
+
+Frontend:
+  1. cd Frontend
+  2. npm install
+  3. (optional) create .env with VITE_API_URL=http://localhost:5000
+  4. npm run dev
+
+Admin login password: configured via ADMIN_PASSWORD in Backend/.env
+================================================================================

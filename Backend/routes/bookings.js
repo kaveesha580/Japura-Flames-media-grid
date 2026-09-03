@@ -31,7 +31,6 @@ router.get('/', async (req, res) => {
     
     res.json(bookings);
   } catch (error) {
-    console.error('Error fetching bookings:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -93,19 +92,14 @@ router.put('/:id', async (req, res) => {
 // ============================================
 router.delete('/:id', async (req, res) => {
   try {
-    console.log('🗑️ Deleting booking ID:', req.params.id);
-    
     const booking = await Booking.findByIdAndDelete(req.params.id);
     
     if (!booking) {
-      console.log('❌ Booking not found:', req.params.id);
       return res.status(404).json({ 
         success: false,
         message: 'Booking not found' 
       });
     }
-    
-    console.log('✅ Booking deleted:', booking._id);
     
     res.json({ 
       success: true,
@@ -114,7 +108,6 @@ router.delete('/:id', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('❌ Error deleting booking:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 
@@ -148,7 +141,6 @@ router.post('/:id/cancel', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error cancelling booking:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 
@@ -156,6 +148,8 @@ router.post('/:id/cancel', async (req, res) => {
   }
 });
 
+// ============================================
+// 🟢 POST /api/bookings/:id/cancel - CANCEL booking (status update)
 // ============================================
 // 🟢 POST /api/bookings/:id/complete - Complete booking with link
 // ============================================
@@ -184,7 +178,6 @@ router.post('/:id/complete', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error completing booking:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -263,50 +256,6 @@ router.post('/:id/assign-crew', async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Error assigning crew:', error);
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// ============================================
-// 🟢 GET /api/bookings/:id/crew - Get assigned crew for booking
-// ============================================
-router.get('/:id/crew', async (req, res) => {
-  try {
-    const booking = await Booking.findById(req.params.id).populate('assignedCrew');
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
-    }
-    res.json(booking.assignedCrew);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-// ============================================
-// 🟢 DELETE /api/bookings/:id/crew/:crewId - Remove crew from booking
-// ============================================
-router.delete('/:id/crew/:crewId', async (req, res) => {
-  try {
-    const booking = await Booking.findById(req.params.id);
-    if (!booking) {
-      return res.status(404).json({ message: 'Booking not found' });
-    }
-
-    booking.assignedCrew = booking.assignedCrew.filter(
-      id => id.toString() !== req.params.crewId
-    );
-    await booking.save();
-
-    const populatedBooking = await Booking.findById(booking._id).populate('assignedCrew');
-
-    res.json({
-      success: true,
-      message: 'Crew removed successfully!',
-      booking: populatedBooking
-    });
-  } catch (error) {
-    console.error('Error removing crew:', error);
     res.status(500).json({ message: error.message });
   }
 });

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE } from '../config';
 
 export function useRegistration() {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ export function useRegistration() {
       
       try {
         const response = await fetch(
-          `http://localhost:5000/api/auth/check-email?email=${encodeURIComponent(email)}`
+          `${API_BASE}/api/auth/check-email?email=${encodeURIComponent(email)}`
         );
         
         const data = await response.json();
@@ -160,7 +161,7 @@ export function useRegistration() {
         organization: formData.organization,
       };
       
-      const response = await fetch('http://localhost:5000/api/auth/register', {
+      const response = await fetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

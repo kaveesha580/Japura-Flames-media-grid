@@ -10,7 +10,6 @@ router.get('/', async (req, res) => {
     const crew = await Crew.find().sort({ createdAt: -1 });
     res.json(crew);
   } catch (error) {
-    console.error('Error fetching crew:', error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -49,7 +48,6 @@ router.post('/', async (req, res) => {
     const savedCrew = await crew.save();
     res.status(201).json(savedCrew);
   } catch (error) {
-    console.error('Error adding crew:', error);
     res.status(400).json({ message: error.message });
   }
 });
@@ -74,7 +72,6 @@ router.put('/:id', async (req, res) => {
     
     res.json(updatedCrew);
   } catch (error) {
-    console.error('Error updating crew:', error);
     res.status(400).json({ message: error.message });
   }
 });
@@ -90,7 +87,6 @@ router.delete('/:id', async (req, res) => {
     }
     res.json({ message: 'Crew member deleted successfully' });
   } catch (error) {
-    console.error('Error deleting crew:', error);
     res.status(500).json({ message: error.message });
   }
 });

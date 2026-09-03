@@ -16,14 +16,11 @@ app.use(express.urlencoded({ extended: true }));
 
 // ===== ROUTES =====
 
-// 1. Auth Routes (Login, Register, Reset Password)
+// 1. Auth Routes
 try {
   const authRoutes = require('./routes/auth');
   app.use('/api/auth', authRoutes);
-  console.log('✅ Auth routes loaded');
 } catch (err) {
-  console.log('❌ Auth routes not found');
-  console.log('   Error:', err.message);
   app.get('/api/auth/test', (req, res) => {
     res.json({ message: 'Auth API - Create routes/auth.js file' });
   });
@@ -33,10 +30,7 @@ try {
 try {
   const projectRoutes = require('./routes/projects');
   app.use('/api/projects', projectRoutes);
-  console.log('✅ Projects routes loaded');
 } catch (err) {
-  console.log('❌ Projects routes not found');
-  console.log('   Error:', err.message);
   app.get('/api/projects', (req, res) => {
     res.json({ message: 'Projects API - Create routes/projects.js file' });
   });
@@ -46,23 +40,17 @@ try {
 try {
   const bookingRoutes = require('./routes/bookings');
   app.use('/api/bookings', bookingRoutes);
-  console.log('✅ Bookings routes loaded');
 } catch (err) {
-  console.log('❌ Bookings routes not found');
-  console.log('   Error:', err.message);
   app.get('/api/bookings', (req, res) => {
     res.json({ message: 'Bookings API - Create routes/bookings.js file' });
   });
 }
 
-// 🟢 4. Crew Routes - මෙය 404 handler එකට කලින් දාන්න
+// 4. Crew Routes
 try {
   const crewRoutes = require('./routes/crew');
   app.use('/api/crew', crewRoutes);
-  console.log('✅ Crew routes loaded');
 } catch (err) {
-  console.log('❌ Crew routes not found');
-  console.log('   Error:', err.message);
   app.get('/api/crew', (req, res) => {
     res.json({ message: 'Crew API - Create routes/crew.js file' });
   });
@@ -72,36 +60,37 @@ try {
 app.get('/api/test', (req, res) => {
   res.json({ 
     success: true,
-    message: '✅ API is working!',
+    message: 'API is working!',
     version: '1.0.0',
     endpoints: {
       auth: {
         register: 'POST /api/auth/register',
         login: 'POST /api/auth/login',
-        resetPassword: 'POST /api/auth/reset-password',
+        adminLogin: 'POST /api/auth/admin-login',
+        resetPassword: 'POST /api/auth/forgot-password',
         profile: 'GET /api/auth/me',
         users: 'GET /api/auth/users',
-        checkEmail: 'GET /api/auth/check-email?email=test@example.com',
-        checkUsername: 'GET /api/auth/check-username?username=test'
+        checkEmail: 'GET /api/auth/check-email?email=test@example.com'
       },
       projects: {
         getAll: 'GET /api/projects',
         create: 'POST /api/projects',
-        getOne: 'GET /api/projects/:id',
         update: 'PUT /api/projects/:id',
         delete: 'DELETE /api/projects/:id'
       },
       bookings: {
         getAll: 'GET /api/bookings',
         create: 'POST /api/bookings',
-        getOne: 'GET /api/bookings/:id',
         update: 'PUT /api/bookings/:id',
-        delete: 'DELETE /api/bookings/:id'
+        delete: 'DELETE /api/bookings/:id',
+        cancel: 'POST /api/bookings/:id/cancel',
+        complete: 'POST /api/bookings/:id/complete',
+        assignCrew: 'POST /api/bookings/:id/assign-crew',
+        paymentSlip: 'POST /api/bookings/:id/payment-slip'
       },
       crew: {  
         getAll: 'GET /api/crew',
         create: 'POST /api/crew',
-        getOne: 'GET /api/crew/:id',
         update: 'PUT /api/crew/:id',
         delete: 'DELETE /api/crew/:id'
       },
@@ -119,15 +108,10 @@ mongoose.connect(MONGODB_URI, {
   useUnifiedTopology: true,
 })
 .then(() => {
-  console.log('✅ MongoDB Connected Successfully');
-  console.log(`   Database: ${mongoose.connection.name}`);
-  console.log(`   Host: ${mongoose.connection.host}`);
+  console.log('MongoDB Connected');
 })
 .catch((err) => {
-  console.log('❌ MongoDB Connection Failed');
-  console.log('   Error:', err.message);
-  console.log('   Please make sure MongoDB is running');
-  console.log('   Try: mongod');
+  console.error('MongoDB Connection Failed:', err.message);
 });
 
 // ===== 404 Handler =====
@@ -147,12 +131,10 @@ app.use((req, res) => {
 
 // ===== Global Error Handler =====
 app.use((err, req, res, next) => {
-  console.error('❌ Server Error:', err.message);
   if (process.env.NODE_ENV === 'development') {
-    console.error('Stack:', err.stack);
+    console.error('Server Error:', err.message);
   }
   
-  // Handle specific error types
   if (err.name === 'ValidationError') {
     const errors = Object.values(err.errors).map(e => e.message);
     return res.status(400).json({
@@ -187,14 +169,5 @@ app.use((err, req, res, next) => {
 
 // ===== START SERVER =====
 app.listen(PORT, () => {
-  console.log('\n🚀 ============================================');
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log('🚀 ============================================');
-  console.log(`📡 Test:        http://localhost:${PORT}/api/test`);
-  console.log(`🔑 Auth:        http://localhost:${PORT}/api/auth`);
-  console.log(`📁 Projects:    http://localhost:${PORT}/api/projects`);
-  console.log(`📅 Bookings:    http://localhost:${PORT}/api/bookings`);
-  console.log(`👥 Crew:        http://localhost:${PORT}/api/crew`); 
-  console.log('🚀 ============================================');
-  
+  console.log(`Server running on http://localhost:${PORT}`);
 });

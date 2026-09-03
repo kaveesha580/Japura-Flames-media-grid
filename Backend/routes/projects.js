@@ -2,14 +2,12 @@ const express = require('express');
 const router = express.Router();
 const Project = require('../models/Project');
 
-// GET - Get all projects (Database එකෙන්)
+// GET - Get all projects
 router.get('/', async (req, res) => {
   try {
     const projects = await Project.find().sort({ createdAt: -1 });
-    console.log(`📁 Found ${projects.length} projects in database`);
     res.json(projects);
   } catch (error) {
-    console.error('❌ Error fetching projects:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 
@@ -17,14 +15,11 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST - Create new project (Database එකට Save කරන්න)
+// POST - Create new project
 router.post('/', async (req, res) => {
   try {
-    console.log('📝 Creating project:', req.body);
-    
     const { title, description, eventDate, eventLocation, githubLink, status, image } = req.body;
     
-    // Validate
     if (!title || title.trim() === '') {
       return res.status(400).json({
         success: false,
@@ -39,7 +34,6 @@ router.post('/', async (req, res) => {
       });
     }
     
-    // Create new project
     const project = new Project({
       title: title.trim(),
       description: description.trim(),
@@ -50,9 +44,7 @@ router.post('/', async (req, res) => {
       image: image || ''
     });
     
-    // Save to database
     const savedProject = await project.save();
-    console.log('✅ Project saved to database:', savedProject._id);
     
     res.status(201).json({
       success: true,
@@ -60,7 +52,6 @@ router.post('/', async (req, res) => {
       data: savedProject
     });
   } catch (error) {
-    console.error('❌ Error creating project:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 
@@ -68,12 +59,10 @@ router.post('/', async (req, res) => {
   }
 });
 
-// PUT - Update project (Database එකේ Update කරන්න)
+// PUT - Update project
 router.put('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`📝 Updating project: ${id}`);
-    
     const { title, description, eventDate, eventLocation, githubLink, status, image } = req.body;
     
     const updateData = {
@@ -86,7 +75,6 @@ router.put('/:id', async (req, res) => {
       image: image || ''
     };
     
-    // Find and update in database
     const project = await Project.findByIdAndUpdate(
       id,
       updateData,
@@ -100,14 +88,12 @@ router.put('/:id', async (req, res) => {
       });
     }
     
-    console.log('✅ Project updated in database:', project._id);
     res.json({
       success: true,
       message: 'Project updated successfully',
       data: project
     });
   } catch (error) {
-    console.error('❌ Error updating project:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 
@@ -115,13 +101,10 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// DELETE - Delete project (Database එකෙන් Delete කරන්න)
+// DELETE - Delete project
 router.delete('/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(`🗑️ Deleting project: ${id}`);
-    
-    // Find and delete from database
     const project = await Project.findByIdAndDelete(id);
     
     if (!project) {
@@ -131,13 +114,11 @@ router.delete('/:id', async (req, res) => {
       });
     }
     
-    console.log('✅ Project deleted from database:', id);
     res.json({
       success: true,
       message: 'Project deleted successfully'
     });
   } catch (error) {
-    console.error('❌ Error deleting project:', error);
     res.status(500).json({ 
       success: false,
       message: error.message 
