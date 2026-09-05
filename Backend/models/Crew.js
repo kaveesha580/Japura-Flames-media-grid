@@ -20,8 +20,6 @@ const CrewSchema = new mongoose.Schema({
   email: {
     type: String,
      default: ''
-  
-    
   },
   role: {
     type: String,

@@ -1,9 +1,7 @@
 /* Import Modern Google Font */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 
-/* ============================================
-   BACK TO HOME BUTTON
-   ============================================ */
+/* BACK TO HOME BUTTON */
 
 .backHomeBtn {
   position: fixed;
@@ -43,9 +41,7 @@
   transform: scale(1.1);
 }
 
-/* ============================================
-   MAIN BACKGROUND
-   ============================================ */
+/* MAIN BACKGROUND */
 
 .loginContainer {
   display: flex;
@@ -147,9 +143,7 @@
 
 }
 
-/* ============================================
-   GLASS CARD
-   ============================================ */
+/* GLASS CARD */
 
 .loginGlassCard {
   background: rgba(255, 255, 255, 0.05);
@@ -180,9 +174,7 @@
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ============================================
-   ANIMATED LOGO
-   ============================================ */
+/* ANIMATED LOGO */
 
 .animatedLogoContainer {
   display: flex;
@@ -232,9 +224,7 @@
   100% { transform: rotate(360deg); }
 }
 
-/* ============================================
-   HEADER - Japura Flames Heading
-   ============================================ */
+/*  Japura Flames Heading*/
 
 .loginHeader {
   text-align: center;
@@ -259,9 +249,7 @@
   margin: 0;
 }
 
-/* ============================================
-   STATUS MESSAGES
-   ============================================ */
+/* STATUS MESSAGES */
 
 .errorMessage {
   background: rgba(255, 50, 50, 0.1);
@@ -285,9 +273,7 @@
   font-size: 13px;
 }
 
-/* ============================================
-   FORM INPUTS
-   ============================================ */
+
 
 .loginForm {
   background-color: transparent;
@@ -327,9 +313,7 @@
  
 }
 
-/* ============================================
-   PASSWORD TOGGLE
-   ============================================ */
+
 
 .passwordInputContainer {
   position: relative;
@@ -357,9 +341,6 @@
   color: #ff8a00;
 }
 
-/* ============================================
-   FORM ACTIONS
-   ============================================ */
 
 .formActions {
   display: flex;
@@ -395,9 +376,6 @@
   color: #e52e71;
 }
 
-/* ============================================
-   LOGIN BUTTON
-   ============================================ */
 
 .loginBtn {
   width: 100%;
@@ -422,9 +400,7 @@
   transform: translateY(1px);
 }
 
-/* ============================================
-   DIVIDER - OR
-   ============================================ */
+
 
 .divider {
   display: flex;
@@ -446,9 +422,7 @@
   padding: 0 10px;
 }
 
-/* ============================================
-   CREATE ACCOUNT BUTTON
-   ============================================ */
+
 
 .createAccountBtn {
   width: 100%;

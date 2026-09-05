@@ -175,41 +175,6 @@
   color: #333;
 }
 
-.service-price {
-  font-size: 12px;
-  color: #666;
-  margin-top: 4px;
-}
-
-/* ===== PRICE ESTIMATE ===== */
-.price-estimate {
-  background: linear-gradient(135deg, #1a0a00, #2d1508);
-  padding: 20px;
-  border-radius: 12px;
-  text-align: center;
-  margin: 20px 0;
-  border: 2px solid #ffc45e;
-}
-
-.price-label {
-  color: #ffc45e;
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.price-amount {
-  color: white;
-  font-size: 32px;
-  font-weight: 700;
-  margin: 5px 0;
-}
-
-.price-note {
-  color: rgba(255,255,255,0.5);
-  font-size: 12px;
-}
-
 /* ===== SUBMIT BUTTON ===== */
 .submit-btn {
   width: 100%;

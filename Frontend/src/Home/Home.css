@@ -1884,6 +1884,7 @@ padding-top: 150px;
 .my-section {
   background: #fffaf5;
   border-bottom-color: var(--orange);
+  height: auto;
 }
 
 .my-section-header {

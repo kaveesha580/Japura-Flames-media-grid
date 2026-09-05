@@ -131,18 +131,13 @@ html {
   transform: translateX(calc(100% + 50px));
 }
 
-/* ===========================
-    ACCENT BAR
-    =========================== */
 
 .accent-bar {
   height: 6px;
   background: linear-gradient(90deg, #6e2e00, #f2b13c, #6e2e00);
 }
 
-/* ===========================
-    HEADER SECTION
-    =========================== */
+
 
 .header-section {
   text-align: center;
@@ -171,20 +166,8 @@ html {
   border-color: rgba(242, 177, 60, 0.5);
 }
 
-/* Logo Placeholder (if image fails to load) */
-.logo-placeholder {
-  width: 180px;
-  height: 180px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6e2e00, #f2b13c);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 48px;
-  font-weight: 700;
-  color: white;
-  border: 4px solid rgba(242, 177, 60, 0.25);
-}
+
+
 
 /* Header Subtitle */
 .header-subtitle {
@@ -424,13 +407,14 @@ h4 {
 /* Reset Button */
 .btn-reset {
   background: transparent;
-  color: white;
-  border: 1px solid #f8f8f8;
+  color: rgb(233, 106, 10);
+  border: 1px solid #e18700;
 }
 
 .btn-reset:hover {
-  border-color: #6b7280;
   background: linear-gradient(to right, #ff8a00, #e52e71);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(229, 46, 113, 0.25);
 }
 
 .btn-reset:active {
@@ -643,13 +627,7 @@ h4 {
   }
 }
 
-/* ===========================
-    DARK MODE SUPPORT
-    =========================== */
 
-/* ===========================
-    ACCESSIBILITY
-    =========================== */
 
 /* Focus visible for keyboard navigation */
 :focus-visible {
@@ -732,9 +710,10 @@ h4 {
 }
 
 .btn-back-to-login:hover:not(:disabled) {
-  background: #f7f7f700;
+  background: #f7f7f7ff;
   transform: translateY(-2px);
-  border-color: white;
+  color: #f68105;
+ 
 }
 
 .btn-back-to-login:active:not(:disabled) {
@@ -909,7 +888,7 @@ h4 {
 }
 
 .input-with-icon .form-input {
-  padding-right: 80px; /* Status message එකට ඉඩ දෙන්න */
+  padding-right: 80px; 
 }
 
 .input-with-icon .input-icon {
@@ -920,7 +899,7 @@ h4 {
   color: #999;
 }
 
-/* Submit button disabled state */
+
 .btn-submit:disabled {
   opacity: 0.6;
   cursor: not-allowed;

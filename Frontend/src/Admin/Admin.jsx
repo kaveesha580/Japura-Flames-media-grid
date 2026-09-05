@@ -38,6 +38,9 @@ function Admin() {
   const [selectedCrewIds, setSelectedCrewIds] = useState([]);
   const [paymentAccount, setPaymentAccount] = useState({ bankName: '', accountName: '', accountNumber: '', instructions: '' });
   const [selectedSlip, setSelectedSlip] = useState(null);
+  const [showPricePopup, setShowPricePopup] = useState(false);
+  const [selectedPriceBooking, setSelectedPriceBooking] = useState(null);
+  const [priceInput, setPriceInput] = useState('');
   
   // Crew Form States
   const [showCrewForm, setShowCrewForm] = useState(false);
@@ -315,6 +318,54 @@ function Admin() {
     }
   };
 
+  const openPricePopup = (booking) => {
+    setSelectedPriceBooking(booking);
+    setPriceInput(String(booking.estimatedPrice || ''));
+    setPaymentAccount({
+      bankName: booking.paymentAccount?.bankName || '',
+      accountName: booking.paymentAccount?.accountName || '',
+      accountNumber: booking.paymentAccount?.accountNumber || '',
+      instructions: booking.paymentAccount?.instructions || ''
+    });
+    setShowPricePopup(true);
+  };
+
+  const closePricePopup = () => {
+    setShowPricePopup(false);
+    setSelectedPriceBooking(null);
+    setPriceInput('');
+  };
+
+  const sendPriceToUser = async () => {
+    const price = Number(priceInput);
+    if (!Number.isFinite(price) || price < 0) {
+      alert('Please enter a valid price.');
+      return;
+    }
+    if (!paymentAccount.bankName.trim() || !paymentAccount.accountName.trim() || !paymentAccount.accountNumber.trim()) {
+      alert('Please enter the bank name, account name, and account number.');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${BOOKING_API_URL}/${selectedPriceBooking._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estimatedPrice: price, status: 'Price Sent', paymentAccount })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to send price');
+      setMessage('✅ Price sent to the user successfully!');
+      closePricePopup();
+      fetchBookings();
+    } catch (error) {
+      setMessage(`❌ ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // ---------- Assign Crew Popup ----------
   const openAssignCrewPopup = (booking) => {
     setSelectedAssignBooking(booking);
@@ -323,10 +374,6 @@ function Admin() {
         ? booking.assignedCrew.map((member) => (member && member._id) || member)
         : []
     );
-    setPaymentAccount({
-      bankName: booking.paymentAccount?.bankName || '', accountName: booking.paymentAccount?.accountName || '',
-      accountNumber: booking.paymentAccount?.accountNumber || '', instructions: booking.paymentAccount?.instructions || ''
-    });
     setShowAssignCrewPopup(true);
   };
 
@@ -351,16 +398,14 @@ function Admin() {
       return;
     }
 
-    // Validate: prevent assigning a crew member to two events on the same date
     const targetDate = selectedAssignBooking?.eventDate;
     if (targetDate) {
       const conflicts = [];
 
       bookings.forEach((b) => {
         if (!b || !b._id) return;
-        if (b._id === selectedAssignBooking._id) return; // skip current booking
-        if (b.status === 'Cancelled' || b.status === 'cancelled') return; // ignore cancelled
-        // Normalize assigned crew ids for this booking
+        if (b._id === selectedAssignBooking._id) return; 
+        if (b.status === 'Cancelled' || b.status === 'cancelled') return; 
         const assignedIds = Array.isArray(b.assignedCrew)
           ? b.assignedCrew.map((m) => (m && (m._id || m)).toString())
           : [];
@@ -394,7 +439,7 @@ function Admin() {
       const response = await fetch(`${BOOKING_API_URL}/${selectedAssignBooking._id}/assign-crew`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ crewIds: selectedCrewIds, paymentAccount })
+        body: JSON.stringify({ crewIds: selectedCrewIds })
       });
 
       const data = await response.json();
@@ -918,8 +963,10 @@ function Admin() {
                     <p><strong>Event:</strong> {booking.eventName}</p>
                     <p><strong>Date:</strong> {booking.eventDate}</p>
                     <p><strong>Time:</strong> {booking.eventTime}</p>
+                    <p><strong>Duration:</strong> {booking.duration}</p>
                     <p><strong>Location:</strong> {booking.eventLocation}</p>
                     <p><strong>Service:</strong> {Array.isArray(booking.serviceType) ? booking.serviceType.join(', ') : booking.serviceType}</p>
+                    <p><strong>Price:</strong> LKR {Number(booking.estimatedPrice || 0).toLocaleString()}</p>
                     <p><strong>Assigned Crew:</strong> {booking.assignedCrew && booking.assignedCrew.length > 0 ? booking.assignedCrew.map(c => `${c.name} (${c.phone})`).join(', ') : '—'}</p>
                     {booking.paymentSlip?.data && (
                       <div className={styles.paymentSlip}>
@@ -935,9 +982,9 @@ function Admin() {
                       <>
                         <button 
                           className={`${styles.actionBtn} ${styles.confirm}`} 
-                          onClick={() => openAssignCrewPopup(booking)}
+                          onClick={() => openPricePopup(booking)}
                         >
-                          👥 Assign & Confirm
+                          💰 Set & Send Price
                         </button>
                         <button 
                           className={`${styles.actionBtn} ${styles.cancel}`} 
@@ -946,6 +993,18 @@ function Admin() {
                           ❌ Cancel
                         </button>
                       </>
+                    )}
+                    {booking.status === 'Price Sent' && (
+                      booking.paymentSlip?.data ? (
+                        <button 
+                          className={`${styles.actionBtn} ${styles.confirm}`} 
+                          onClick={() => openAssignCrewPopup(booking)}
+                        >
+                          👥 Assign & Confirm
+                        </button>
+                      ) : (
+                        <span className={styles.assignedCrewBadge}>⏳ Waiting for payment slip</span>
+                      )
                     )}
                     {booking.status === 'Confirmed' && (
                       <>
@@ -1216,6 +1275,49 @@ function Admin() {
         </div>
       )}
 
+      {showPricePopup && selectedPriceBooking && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modalContent}>
+            <div className={styles.modalHeader}>
+              <h2>💰 Send Event Price</h2>
+              <button className={styles.modalClose} onClick={closePricePopup}>✕</button>
+            </div>
+            <div className={styles.modalBody}>
+              <div className={styles.modalInfo}>
+                <p><strong>Event:</strong> {selectedPriceBooking.eventName}</p>
+                <p><strong>Duration:</strong> {selectedPriceBooking.duration}</p>
+                <p><strong>User:</strong> {selectedPriceBooking.email}</p>
+              </div>
+              <div className={styles.assignCrewSection}>
+                <h4>Final price</h4>
+                <input
+                  type="number"
+                  min="0"
+                  value={priceInput}
+                  onChange={(e) => setPriceInput(e.target.value)}
+                  placeholder="Enter price in LKR"
+                />
+                <p className={styles.assignNote}>The user will see this price before crew is assigned.</p>
+              </div>
+              <div className={styles.assignCrewSection}>
+                <h4>Bank details</h4>
+                <p className={styles.assignNote}>These details will be sent to the user with the price.</p>
+                <input value={paymentAccount.bankName} onChange={(e) => setPaymentAccount({ ...paymentAccount, bankName: e.target.value })} placeholder="Bank name" />
+                <input value={paymentAccount.accountName} onChange={(e) => setPaymentAccount({ ...paymentAccount, accountName: e.target.value })} placeholder="Account holder name" />
+                <input value={paymentAccount.accountNumber} onChange={(e) => setPaymentAccount({ ...paymentAccount, accountNumber: e.target.value })} placeholder="Account number" />
+                <textarea value={paymentAccount.instructions} onChange={(e) => setPaymentAccount({ ...paymentAccount, instructions: e.target.value })} placeholder="Payment instructions (optional)" rows="3" />
+              </div>
+            </div>
+            <div className={styles.modalFooter}>
+              <button onClick={sendPriceToUser} className={styles.confirmCompleteBtn} disabled={loading}>
+                {loading ? 'Sending...' : '📨 Send Price'}
+              </button>
+              <button onClick={closePricePopup} className={styles.modalCancelBtn}>Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ===== ASSIGN CREW POPUP ===== */}
       {showAssignCrewPopup && selectedAssignBooking && (
         <div className={styles.modalOverlay}>
@@ -1267,14 +1369,6 @@ function Admin() {
                     ))}
                   </div>
                 )}
-              </div>
-              <div className={styles.assignCrewSection}>
-                <h4>Payment Account Details</h4>
-                <p className={styles.assignNote}>These details will appear in the user's My tab after confirmation.</p>
-                <input value={paymentAccount.bankName} onChange={(e) => setPaymentAccount({ ...paymentAccount, bankName: e.target.value })} placeholder="Bank name" />
-                <input value={paymentAccount.accountName} onChange={(e) => setPaymentAccount({ ...paymentAccount, accountName: e.target.value })} placeholder="Account holder name" />
-                <input value={paymentAccount.accountNumber} onChange={(e) => setPaymentAccount({ ...paymentAccount, accountNumber: e.target.value })} placeholder="Account number" />
-                <textarea value={paymentAccount.instructions} onChange={(e) => setPaymentAccount({ ...paymentAccount, instructions: e.target.value })} placeholder="Payment instructions (optional)" rows="3" />
               </div>
             </div>
             <div className={styles.modalFooter}>

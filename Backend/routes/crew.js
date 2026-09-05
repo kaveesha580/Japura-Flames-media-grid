@@ -2,9 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Crew = require('../models/Crew');
 
-// ============================================
-// 🟢 GET /api/crew - Get all crew members
-// ============================================
+
 router.get('/', async (req, res) => {
   try {
     const crew = await Crew.find().sort({ createdAt: -1 });
@@ -14,9 +12,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// ============================================
-// 🟢 GET /api/crew/:id - Get single crew member
-// ============================================
+
 router.get('/:id', async (req, res) => {
   try {
     const crew = await Crew.findById(req.params.id);
@@ -29,9 +25,9 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// ============================================
-// 🟢 POST /api/crew - Add new crew member
-// ============================================
+
+// Add new crew member
+
 router.post('/', async (req, res) => {
   try {
     const { name, unit, phone, email, role, image } = req.body;
@@ -52,9 +48,8 @@ router.post('/', async (req, res) => {
   }
 });
 
-// ============================================
-// 🟢 PUT /api/crew/:id - Update crew member
-// ============================================
+// Update crew member
+
 router.put('/:id', async (req, res) => {
   try {
     const { name, unit, phone, email, role, image } = req.body;
@@ -76,9 +71,8 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// ============================================
-// 🟢 DELETE /api/crew/:id - Delete crew member
-// ============================================
+//Delete crew member
+
 router.delete('/:id', async (req, res) => {
   try {
     const crew = await Crew.findByIdAndDelete(req.params.id);
