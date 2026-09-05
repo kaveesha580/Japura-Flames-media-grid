@@ -23,52 +23,10 @@ import {
 
 const API_URL = `${API_BASE}/api/projects`;
 const BOOKING_API_URL = `${API_BASE}/api/bookings`;
+const FACEBOOK_POSTS_API_URL = `${API_BASE}/api/facebook-posts`;
 
 
 
-
-const facebookPosts = [
-  {
-    url: "https://www.facebook.com/Jpuraflames/posts/pfbid0dP62V9BcBEEdTrPGbo6RqbYhZYxFi5ULnMXUEHESZw1kEiPdTrRjqUjxupapqP12l",
-    height: 808,
-  },
-  {
-    url: "https://www.facebook.com/Jpuraflames/posts/pfbid02VSL2xs4HxEb4M1Myxzw3dvbNjuYdiDi7ZFnzqseJMTpSBegQmngjZw9StAhfyWFhl",
-    height: 808,
-  },
-  {
-    url: "https://www.facebook.com/Jpuraflames/posts/pfbid032MZNcfofnBQAozjstAsUiVy5xa5vbuEQuUDaL1oGSJhZNJexC1HXMXUio4eh9Exjl",
-    height: 808,
-  },
-  {
-    url: "https://www.facebook.com/Jpuraflames/posts/pfbid0265FRgvfcuQ1Mm8zfifTqkWsY6sbvQ9oobr8qQbKLoVmMYy538ZWyzm6zfy94iGcBl",
-    height: 808,
-  },
-  {
-    url: "https://web.facebook.com/Jpuraflames/posts/pfbid0C6BG69DvA1dCozbXEKihP29SeGgT94LUb9BKdRWa9hoGBonpW7VUf9jAhSpaHFK3l",
-    height: 808,
-  },
-  {
-    url: "https://web.facebook.com/Jpuraflames/posts/pfbid031ADAXyYnGLM9CBxJX7UKMrp4a3T3mWiQ7pYmNoG5FSKsUXJD1ULCeXyZ3EWbA1e8l",
-    height: 808,
-  },
-  {
-    url: "https://web.facebook.com/Jpuraflames/posts/pfbid0ES2xs2UTD51jPMt2XMd8UM8UoCe1NiW9y27PVY5DHgGLdC4uQiJoagXzCz9HXuUel",
-    height: 808,
-  },
-  {
-    url: "https://web.facebook.com/media/set/?set=a.1621734422643686&type=3&ref=embed_post",
-    height: 808,
-  },
-  {
-    url: "https://web.facebook.com/media/set/?set=a.1628088238674971&type=3&ref=embed_post",
-    height: 808,
-  },
-  {
-    url: "https://www.facebook.com/media/set?vanity=Jpuraflames&set=a.1641951533955308",
-    height: 808,
-  },
-];
 
 const prideMembers = [
   {
@@ -417,10 +375,23 @@ function Home() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [adminFacebookPosts, setAdminFacebookPosts] = useState([]);
 
   useEffect(() => {
     fetchProjects();
+    fetchFacebookPosts();
   }, []);
+
+  const fetchFacebookPosts = async () => {
+    try {
+      const response = await fetch(FACEBOOK_POSTS_API_URL);
+      const data = await response.json();
+      setAdminFacebookPosts(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Failed to load Facebook posts:", error);
+      setAdminFacebookPosts([]);
+    }
+  };
 
   const fetchProjects = async () => {
     setLoading(true);
@@ -1065,7 +1036,7 @@ function Home() {
             950: { slidesPerView: 3 },
           }}
         >
-          {facebookPosts
+          {adminFacebookPosts
             .filter((post) => post.url)
             .map((post) => (
               <SwiperSlide key={post.url}>

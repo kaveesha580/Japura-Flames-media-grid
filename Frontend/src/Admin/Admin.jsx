@@ -5,6 +5,7 @@ import { API_BASE } from '../config';
 const API_URL = `${API_BASE}/api/projects`;
 const BOOKING_API_URL = `${API_BASE}/api/bookings`;
 const CREW_API_URL = `${API_BASE}/api/crew`;
+const FACEBOOK_POSTS_API_URL = `${API_BASE}/api/facebook-posts`;
 
 function Admin() {
   // ---------- Authentication State ----------
@@ -17,10 +18,12 @@ function Admin() {
   const [bookings, setBookings] = useState([]);
   const [crew, setCrew] = useState([]);
   const [users, setUsers] = useState([]);
+  const [facebookPosts, setFacebookPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [message, setMessage] = useState('');
   const [activeTab, setActiveTab] = useState('projects');
+  const [facebookPostUrl, setFacebookPostUrl] = useState('');
   
   // Cancel Popup States
   const [showCancelPopup, setShowCancelPopup] = useState(false);
@@ -72,6 +75,7 @@ function Admin() {
       fetchBookings();
       fetchCrew();
       fetchUsers();
+      fetchFacebookPosts();
     }
   }, [isAuthenticated]);
 
@@ -93,6 +97,51 @@ function Admin() {
       setUsers([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchFacebookPosts = async () => {
+    try {
+      const response = await fetch(FACEBOOK_POSTS_API_URL);
+      const data = await response.json();
+      setFacebookPosts(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error('Failed to load Facebook posts:', error);
+      setFacebookPosts([]);
+    }
+  };
+
+  const handleFacebookPostSubmit = async (event) => {
+    event.preventDefault();
+    setLoading(true);
+    setMessage('');
+    try {
+      const response = await fetch(FACEBOOK_POSTS_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: facebookPostUrl })
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Failed to add Facebook post');
+      setFacebookPostUrl('');
+      setMessage('✅ Facebook post added successfully!');
+      fetchFacebookPosts();
+    } catch (error) {
+      setMessage(`❌ ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleFacebookPostDelete = async (id) => {
+    if (!window.confirm('Delete this Facebook post?')) return;
+    try {
+      const response = await fetch(`${FACEBOOK_POSTS_API_URL}/${id}`, { method: 'DELETE' });
+      if (!response.ok) throw new Error('Failed to delete Facebook post');
+      setMessage('✅ Facebook post deleted successfully!');
+      fetchFacebookPosts();
+    } catch (error) {
+      setMessage(`❌ ${error.message}`);
     }
   };
 
@@ -807,6 +856,12 @@ function Admin() {
         >
           🧑‍💻 Users ({users.length})
         </button>
+        <button 
+          className={`${styles.tabBtn} ${activeTab === 'facebook' ? styles.active : ''}`}
+          onClick={() => setActiveTab('facebook')}
+        >
+          📘 Facebook Posts ({facebookPosts.length})
+        </button>
       </div>
 
       {/* ===== PROJECTS TAB ===== */}
@@ -938,6 +993,46 @@ function Admin() {
             )}
           </div>
         </>
+      )}
+
+      {/* ===== BOOKINGS TAB ===== */}
+      {activeTab === 'facebook' && (
+        <div className={styles.projectsList}>
+          <h2>📘 Add Facebook Post</h2>
+          <form onSubmit={handleFacebookPostSubmit}>
+            <div className={styles.formGroup}>
+              <label>Facebook post URL *</label>
+              <input
+                type="url"
+                value={facebookPostUrl}
+                onChange={(event) => setFacebookPostUrl(event.target.value)}
+                placeholder="https://www.facebook.com/Page/posts/..."
+                required
+              />
+            </div>
+            <button type="submit" disabled={loading} className={styles.submitBtn}>
+              {loading ? 'Adding...' : '➕ Add Facebook Post'}
+            </button>
+          </form>
+          <h2>All Facebook Posts</h2>
+          {facebookPosts.length === 0 ? <p>No Facebook posts added yet.</p> : (
+            <table className={styles.adminTable}>
+              <thead><tr><th>URL</th><th>Actions</th></tr></thead>
+              <tbody>
+                {facebookPosts.map((post) => (
+                  <tr key={post._id}>
+                    <td>{post.url}</td>
+                    <td>
+                      <button className={`${styles.actionBtn} ${styles.delete}`} onClick={() => handleFacebookPostDelete(post._id)}>
+                        🗑️ Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       )}
 
       {/* ===== BOOKINGS TAB ===== */}

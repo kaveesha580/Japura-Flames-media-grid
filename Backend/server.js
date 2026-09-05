@@ -56,6 +56,16 @@ try {
   });
 }
 
+// 5. Facebook Posts Routes
+try {
+  const facebookPostRoutes = require('./routes/facebookPosts');
+  app.use('/api/facebook-posts', facebookPostRoutes);
+} catch (err) {
+  app.get('/api/facebook-posts', (req, res) => {
+    res.json({ message: 'Facebook posts API is unavailable' });
+  });
+}
+
 // ===== TEST ROUTE =====
 app.get('/api/test', (req, res) => {
   res.json({ 
