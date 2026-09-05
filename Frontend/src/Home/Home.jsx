@@ -376,6 +376,7 @@ function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [adminFacebookPosts, setAdminFacebookPosts] = useState([]);
+  const [facebookPostsLoading, setFacebookPostsLoading] = useState(true);
 
   useEffect(() => {
     fetchProjects();
@@ -383,6 +384,7 @@ function Home() {
   }, []);
 
   const fetchFacebookPosts = async () => {
+    setFacebookPostsLoading(true);
     try {
       const response = await fetch(FACEBOOK_POSTS_API_URL);
       const data = await response.json();
@@ -390,6 +392,8 @@ function Home() {
     } catch (error) {
       console.error("Failed to load Facebook posts:", error);
       setAdminFacebookPosts([]);
+    } finally {
+      setFacebookPostsLoading(false);
     }
   };
 
@@ -1023,45 +1027,52 @@ function Home() {
             <p>Stories, events, and moments captured by J'pura Flames.</p>
           </div>
         </div>
-        <Swiper
-          className="facebook-slider"
-          modules={[Autoplay, Navigation]}
-          navigation
-          autoplay={{ delay: 2000, disableOnInteraction: false }}
-          loop
-          spaceBetween={30}
-          breakpoints={{
-            0: { slidesPerView: 1 },
-            650: { slidesPerView: 2 },
-            950: { slidesPerView: 3 },
-          }}
-        >
-          {adminFacebookPosts
-            .filter((post) => post.url)
-            .map((post) => (
-              <SwiperSlide key={post.url}>
-                <div className="facebook-post-wrapper">
-                  <iframe
-                    className="facebook-post"
-                    style={{
-                      border: "none",
-                      overflow: "hidden",
-                      width: "100%",
-                      height: post.height || 500,
-                    }}
-                    src={`https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(post.url)}&show_text=true&width=300`}
-                    width="300"
-                    height={post.height || 500}
-                    title="J'pura Flames Facebook post"
-                    scrolling="no"
-                    frameBorder="0"
-                    allowFullScreen
-                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
-                  />
-                </div>
-              </SwiperSlide>
-            ))}
-        </Swiper>
+        {facebookPostsLoading ? (
+          <p className="projects-loading">Loading Facebook posts...</p>
+        ) : adminFacebookPosts.filter((post) => post.url).length === 0 ? (
+          <p className="projects-empty">No Facebook posts available yet.</p>
+        ) : (
+          <Swiper
+            key={adminFacebookPosts.map((post) => post._id || post.url).join("-")}
+            className="facebook-slider"
+            modules={[Autoplay, Navigation]}
+            navigation
+            autoplay={{ delay: 2000, disableOnInteraction: false }}
+            loop={adminFacebookPosts.length > 1}
+            spaceBetween={30}
+            breakpoints={{
+              0: { slidesPerView: 1 },
+              650: { slidesPerView: 2 },
+              950: { slidesPerView: 3 },
+            }}
+          >
+            {adminFacebookPosts
+              .filter((post) => post.url)
+              .map((post) => (
+                <SwiperSlide key={post._id || post.url}>
+                  <div className="facebook-post-wrapper">
+                    <iframe
+                      className="facebook-post"
+                      style={{
+                        border: "none",
+                        overflow: "hidden",
+                        width: "100%",
+                        height: post.height || 500,
+                      }}
+                      src={`https://www.facebook.com/plugins/post.php?href=${encodeURIComponent(post.url)}&show_text=true&width=300`}
+                      width="300"
+                      height={post.height || 500}
+                      title="J'pura Flames Facebook post"
+                      scrolling="no"
+                      frameBorder="0"
+                      allowFullScreen
+                      allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                    />
+                  </div>
+                </SwiperSlide>
+              ))}
+          </Swiper>
+        )}
       </section>
 
       <div className="projector-container" ref={projectorContainerRef}>
